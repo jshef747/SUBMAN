@@ -1,0 +1,29 @@
+.navbar-wrapper {
+  width: 100%;
+  padding: 2rem 4rem;
+  padding-left: 2rem;
+  box-sizing: border-box;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.nav-links,
+.user-actions {
+  list-style: none;
+  display: flex;
+  padding: 0;
+  margin: 0;
+  gap: 1.5rem;
+}
+
+.nav-links li,
+.user-actions li {
+  cursor: pointer;
+  padding: 5px 10px;
+  font-weight: 500;
+}
