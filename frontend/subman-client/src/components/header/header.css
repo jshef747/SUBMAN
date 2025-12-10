@@ -4,7 +4,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #16213e;
+  background-color: #0e0e0f;
   width: 100%;
   z-index: 1000;
 }
@@ -14,7 +14,7 @@
     Arial, sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
-  color: #fff;
+  color: #a19f9f;
   text-decoration: none;
 }
 
@@ -23,7 +23,7 @@
     Arial, sans-serif;
   font-size: 2rem;
   font-weight: 700;
-  color: #fff;
+  color: #ebe5e5;
   text-decoration: none;
   margin-left: 2rem;
 }
