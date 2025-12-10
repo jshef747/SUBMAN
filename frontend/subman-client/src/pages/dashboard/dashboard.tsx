@@ -10,7 +10,6 @@ const dashboard: React.FC = () => {
   return (
     <div className="dashboard-wrapper">
       <div className="dashboard-content">
-        <Header />
 
         <main className="dashboard-grid">
           <SubscriptionList />
