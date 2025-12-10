@@ -10,7 +10,12 @@ const subscriptions = [
 const SubscriptionList: React.FC = () => {
     return (
         <div className='sub-list-card'>
+
+            <div className='card-header'>
             <h3 className='card-title'>Dashboard</h3>
+            <button className='add-subscription-button'>Add Subscription</button>
+            </div>
+            
             <table className='sub-table'>
                 <thead>
                     <tr>

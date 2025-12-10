@@ -3,14 +3,36 @@
     border-radius: 15px;
     padding: 2rem;
     flex: 2;
-
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
 }
 
 .card-title {
     font-size: 1.7rem;
     margin-bottom: 1.5rem;
     font-size: 1.25rem;
+}
+
+.add-subscription-button {
+    background-color: var(--light-green);
+    color: var(--text-white);
+    border: none;
+    padding: 0.3rem 0.6rem;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: ease 0.3s;
+}
+
+.add-subscription-button:hover {
+    box-shadow: 0 0 7px var(--neon-green);
+    margin-bottom: -0.2rem;
 }
 
 .sub-table {
