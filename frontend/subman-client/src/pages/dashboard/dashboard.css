@@ -1,0 +1,27 @@
+.dashboard-wrapper {
+    --bg-dark: #202020ef;
+    --text-white: #ffffff;
+    --light-green: #1cc73b;
+    --neon-green: #39ff14;
+    --card-dark: #1e1e1e;
+
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    min-height: 100vh;
+    text-align: left;
+    font-family: sans-serif;
+
+    box-sizing: border-box;
+}
+
+.dashboard-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.dashboard-grid {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+}

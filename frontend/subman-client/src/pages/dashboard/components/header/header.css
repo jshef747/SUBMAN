@@ -1,0 +1,35 @@
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.header-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--text-white);
+    margin: 0;
+}
+
+.add-btn {
+    background-color: var(--light-green);
+    color: var(--text-white);
+    font-weight: bold;
+
+    border: 1px solid var(--light-green);
+    border-radius: 5px;
+    padding: 0.75rem 1.5rem;
+
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    box-shadow: 0 0 5px var(--light-green);
+    
+    transition: all 0.3s ease;
+}
+
+.add-btn:hover {
+    box-shadow: 0 0 15px var(--neon-green);
+}

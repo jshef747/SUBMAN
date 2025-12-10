@@ -1,0 +1,54 @@
+.sub-list-card {
+    background-color: var(--card-dark);
+    border-radius: 15px;
+    padding: 2rem;
+    flex: 2;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.card-title {
+    font-size: 1.7rem;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+}
+
+.sub-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--text-white);
+}
+
+.sub-table th {
+    text-align: left;
+    padding-bottom: 1rem;
+    font-weight: 600;
+    border-bottom: 1px solid #333;
+}
+
+.table-row {
+    height: 60px;
+    border-bottom: #333 1px solid;
+}
+
+.service-cell {
+    font-weight: 520;
+} 
+
+.status-badge {
+    display: inline-block;
+    min-width: 80px;
+    border-radius: 8px;
+    text-align: center;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.status-badge.active {
+    background-color: var(--light-green);
+}
+
+.status-badge.expired {
+    background-color: #ff4d4d;
+}
