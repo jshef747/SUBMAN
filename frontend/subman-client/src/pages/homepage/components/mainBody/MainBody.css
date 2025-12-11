@@ -21,7 +21,7 @@
   color: #c9c6c6;
 }
 .main-image {
-  mix-blend-mode: screen;
+  mix-blend-mode: lighten;
 }
 
 .get-started {
