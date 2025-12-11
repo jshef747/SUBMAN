@@ -1,7 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/homepage/homepage";
-import DashboardPage from "./pages/dashboard/dashboard";
+import DashboardPage from "./pages/dashboard/Dashboard";
 import Header from "./components/header/header";
 
 function App() {

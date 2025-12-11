@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import './subscriptionList.css';
+import './SubscriptionList.css';
 import AddSubscriptionModal from '../AddSubscriptionModal/AddSubscriptionModal';
 
 const INITIAL_SUBSCRIPTIONS = [

@@ -58,11 +58,10 @@
     margin-top: 9rem;
 }
 
-.cancel-button {
+button {
     padding: 0.5rem 1.5rem;
     border-radius: 7px;
     border: none;
-    background-color: #ff4d4d;
     font-weight: 600;
     font-size: 0.8rem;
     cursor: pointer;
@@ -70,7 +69,20 @@
     transition: background-color 0.3s ease;
 }
 
+.cancel-button {
+    background-color: #ff4d4d;
+}
+
 .cancel-button:hover {
     background-color: #bb1f1f;
     box-shadow: 0 0 5px #d25050;
+}
+
+.submit-button {
+    background-color: var(--light-green);
+}
+
+.submit-button:hover {
+    background-color: var(--neon-green);
+    box-shadow: 0 0 5px var(--neon-green);
 }

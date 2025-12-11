@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import './addSubscriptionModal.css'
+import './AddSubscriptionModal.css'
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -16,6 +16,7 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
   const handleSave = () => {
     if(!service || !price || !renewalDate) {
         alert("Please fill in all fields");
+        //need to change to custom modal later
         return;
     }
     onSave({ service, price: `$${price}`, renewalDate: renewalDate ? renewalDate.toISOString().split('T')[0] : '', status: 'Active' });

@@ -1,8 +1,8 @@
 import React from "react";  
-import './dashboard.css';
+import './Dashboard.css';
 
-import SpendingChart from "./components/spendingChart/spendingChart";
-import SubscriptionList from "./components/subscriptionList/subscriptionList";
+import SpendingChart from "./components/SpendingChart/SpendingChart";
+import SubscriptionList from "./components/SubscriptionList/SubscriptionList";
 
 
 const dashboard: React.FC = () => {
