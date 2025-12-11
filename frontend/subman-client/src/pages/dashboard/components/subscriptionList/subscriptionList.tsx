@@ -1,4 +1,6 @@
+import React, {useState} from 'react';
 import './subscriptionList.css';
+import AddSubscriptionModal from '../addSubscriptionModal/addSubscriptionModal';
 
 const subscriptions = [
     { id: 1, service: 'Netflix', price: '$12.99', renewalDate: '2024-07-15' , status: 'Active'},
@@ -8,12 +10,15 @@ const subscriptions = [
 ]
 
 const SubscriptionList: React.FC = () => {
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    
     return (
         <div className='sub-list-card'>
 
             <div className='card-header'>
             <h3 className='card-title'>Dashboard</h3>
-            <button className='add-subscription-button'>Add Subscription</button>
+            <button className='add-subscription-button' onClick={() => setIsModalOpen(true)}>Add Subscription</button>
             </div>
             
             <table className='sub-table'>
@@ -43,6 +48,8 @@ const SubscriptionList: React.FC = () => {
                     ))}
                 </tbody>
             </table>
+
+            <AddSubscriptionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </div>
     )
 }
