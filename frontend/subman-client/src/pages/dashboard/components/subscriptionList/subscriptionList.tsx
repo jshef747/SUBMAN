@@ -1,6 +1,8 @@
-import './subscriptionList.css';
+import React, {useState} from 'react';
+import './SubscriptionList.css';
+import AddSubscriptionModal from '../AddSubscriptionModal/AddSubscriptionModal';
 
-const subscriptions = [
+const INITIAL_SUBSCRIPTIONS = [
     { id: 1, service: 'Netflix', price: '$12.99', renewalDate: '2024-07-15' , status: 'Active'},
     { id: 2, service: 'Spotify', price: '$9.99', renewalDate: '2024-07-20' , status: 'Active'},
     { id: 3, service: 'Hulu', price: '$11.99', renewalDate: '2024-07-25' , status: 'Expired'},
@@ -8,12 +10,25 @@ const subscriptions = [
 ]
 
 const SubscriptionList: React.FC = () => {
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [subscriptions, setSubscriptions] = useState(INITIAL_SUBSCRIPTIONS);
+
+    const handleAddSubscription = (data: { service: string; price: string; renewalDate: string , status: string }) => {
+        const newSubscription = {
+            id: subscriptions.length + 1,
+            ...data
+        };
+        setSubscriptions((prevSubs) => [...prevSubs, newSubscription]);
+    }
+    
     return (
         <div className='sub-list-card'>
 
             <div className='card-header'>
             <h3 className='card-title'>Dashboard</h3>
-            <button className='add-subscription-button'>Add Subscription</button>
+            <button className='add-subscription-button' onClick={() => setIsModalOpen(true)}>Add Subscription</button>
             </div>
             
             <table className='sub-table'>
@@ -43,6 +58,8 @@ const SubscriptionList: React.FC = () => {
                     ))}
                 </tbody>
             </table>
+
+            <AddSubscriptionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleAddSubscription} />
         </div>
     )
 }
