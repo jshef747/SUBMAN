@@ -1,0 +1,44 @@
+.main-body-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 200px;
+  padding-top: 50px;
+}
+
+.main-text-wrapper {
+  width: 30%;
+  text-align: left;
+}
+.main-text-wrapper h1 {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  line-height: 1.1;
+}
+.main-text-wrapper p {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #c9c6c6;
+}
+.main-image {
+  mix-blend-mode: screen;
+}
+
+.get-started {
+  --light-green: #1cc73b;
+  --neon-green: #39ff14;
+
+  background-color: var(--light-green);
+  color: white;
+  border: none;
+  padding: 0.3rem 2rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: ease 0.3s;
+  background-image: linear-gradient(
+    to left,
+    var(--light-green),
+    var(--neon-green)
+  );
+}
