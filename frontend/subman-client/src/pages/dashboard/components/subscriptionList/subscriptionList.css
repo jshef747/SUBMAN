@@ -48,6 +48,10 @@
     border-bottom: 1px solid #333;
 }
 
+.renDate-cell {
+    padding-left: 4rem;
+}
+
 .table-row {
     height: 60px;
     border-bottom: #333 1px solid;
@@ -56,6 +60,7 @@
 .service-cell {
     font-weight: 520;
 } 
+
 
 .status-badge {
     display: inline-block;
@@ -73,4 +78,8 @@
 
 .status-badge.expired {
     background-color: #ff4d4d;
+}
+
+.status-head {
+    padding-left: 1.5rem;
 }

@@ -3,20 +3,24 @@ import './AddSubscriptionModal.css'
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (data: { service: string; price: string; renewalDate: string , status: string }) => void;
+    onSave: (data: { service: string; price: string; payCycle: string; renewalDate: string , status: string }) => void;
 }
 
 const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave }) => {
   const [service, setService] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [payCycle, setPayCycle] = useState<string>('');
-  const [renewalDate, setRenewalDate] = useState<Date | null>(null);
+  const [renewalDate, setRenewalDate] = useState<string>('');
   const [serviceInputClass, setServiceInputClass] = useState<string>('form-input');
   const [priceInputClass, setPriceInputClass] = useState<string>('form-input');
   const [dateInputClass, setDateInputClass] = useState<string>('form-input');
   const [payCycleInputClass, setPayCycleInputClass] = useState<string>('form-input');
 
   if (!isOpen) return null;
+
+  const dataLabelName = () => { 
+    return payCycle === 'Monthly' ? 'Select renewal day' : 'Select renewal month';
+  }
 
   const handleSave = () => {
 
@@ -46,10 +50,10 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
         return;
     }
 
-    onSave({ service, price: `$${price}`, renewalDate: renewalDate ? renewalDate.toISOString().split('T')[0] : '', status: 'Active' });
+    onSave({ service, price: `$${price}`, payCycle, renewalDate, status: 'Active' });
     setService('');
     setPrice('');
-    setRenewalDate(null);
+    setRenewalDate('');
     onClose();
   }
 
@@ -78,8 +82,8 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
                     </select>
                 </div>
                 <div className='form-group'>
-                    <label className='form-label'>Renewal Date</label>
-                    <input type="date" className={dateInputClass} value={renewalDate ? renewalDate.toISOString().split('T')[0] : ''} onChange={(e) => setRenewalDate(e.target.value ? new Date(e.target.value) : null)} />
+                    <label className='form-label'>{payCycle ? dataLabelName() : 'Select pay cycle first'}</label>
+                    <input type="number" className={dateInputClass} value={renewalDate} onChange={(e) => setRenewalDate(e.target.value.toString())} />
                 </div>
                 <div className='form-actions'>
                     <button type="button" className='cancel-button' onClick={onClose}>Cancel</button>

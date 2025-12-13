@@ -3,10 +3,10 @@ import './SubscriptionList.css';
 import AddSubscriptionModal from '../AddSubscriptionModal/AddSubscriptionModal';
 
 const INITIAL_SUBSCRIPTIONS = [
-    { id: 1, service: 'Netflix', price: '$12.99', payCycle: 'Monthly', renewalDate: '2024-07-15' , status: 'Active'},
-    { id: 2, service: 'Spotify', price: '$9.99', payCycle: 'Monthly', renewalDate: '2024-07-20' , status: 'Active'},
-    { id: 3, service: 'Hulu', price: '$11.99', payCycle: 'Monthly', renewalDate: '2024-07-25' , status: 'Expired'},
-    { id: 4, service: 'Disney+', price: '$7.99', payCycle: 'Monthly', renewalDate: '2024-07-30' , status: 'Active'},
+    { id: 1, service: 'Netflix', price: '$12.99', payCycle: 'Monthly', renewalDate: '15' , status: 'Active'},
+    { id: 2, service: 'Spotify', price: '$9.99', payCycle: 'Monthly', renewalDate: '20' , status: 'Active'},
+    { id: 3, service: 'Hulu', price: '$11.99', payCycle: 'Monthly', renewalDate: '25' , status: 'Expired'},
+    { id: 4, service: 'Disney+', price: '$7.99', payCycle: 'Monthly', renewalDate: '30' , status: 'Active'},
 ]
 
 const SubscriptionList: React.FC = () => {
@@ -34,11 +34,11 @@ const SubscriptionList: React.FC = () => {
             <table className='sub-table'>
                 <thead>
                     <tr>
-                        <th style={{textAlign: 'left'}}>Service</th>
+                        <th>Service</th>
                         <th>Price</th>
                         <th>Pay Cycle</th>
-                        <th>Renewal Date</th>
-                        <th>Status</th>
+                        <th>Renewal day/month</th>
+                        <th className='status-head'>Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,7 +50,7 @@ const SubscriptionList: React.FC = () => {
                             </td>
                             <td>{sub.price}</td>
                             <td>{sub.payCycle}</td>
-                            <td>{sub.renewalDate}</td>
+                            <td className='renDate-cell'>{sub.renewalDate}</td>
                             <td>
                                 <span className={`status-badge ${sub.status.toLowerCase()}`}>
                                     {sub.status}
