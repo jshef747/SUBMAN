@@ -23,6 +23,25 @@ const SubscriptionList: React.FC = () => {
         setSubscriptions((prevSubs) => [...prevSubs, newSubscription]);
     }
     
+    const calculateNextPaymentDate = (payCycle: string, renewalDate: string): string => {
+        const today = new Date();
+        let nextPaymentDate: Date;
+
+        if (payCycle === 'Monthly') {
+            nextPaymentDate = new Date(today.getFullYear(), today.getMonth(), parseInt(renewalDate));
+            if (nextPaymentDate < today) {
+                nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
+            }
+        } else { // Yearly
+            nextPaymentDate = new Date(today.getFullYear(), parseInt(renewalDate) - 1, today.getDate());
+            if (nextPaymentDate < today) {
+                nextPaymentDate.setFullYear(nextPaymentDate.getFullYear() + 1);
+            }
+        }
+
+        return nextPaymentDate.toLocaleDateString();
+    }
+
     return (
         <div className='sub-list-card'>
 
@@ -38,6 +57,7 @@ const SubscriptionList: React.FC = () => {
                         <th>Price</th>
                         <th>Pay Cycle</th>
                         <th>Renewal day/month</th>
+                        <th>Next Payment Date</th>
                         <th className='status-head'>Status</th>
                     </tr>
                 </thead>
@@ -51,6 +71,7 @@ const SubscriptionList: React.FC = () => {
                             <td>{sub.price}</td>
                             <td>{sub.payCycle}</td>
                             <td className='renDate-cell'>{sub.renewalDate}</td>
+                            <td className='next-cell'>{calculateNextPaymentDate(sub.payCycle, sub.renewalDate)}</td>
                             <td>
                                 <span className={`status-badge ${sub.status.toLowerCase()}`}>
                                     {sub.status}
