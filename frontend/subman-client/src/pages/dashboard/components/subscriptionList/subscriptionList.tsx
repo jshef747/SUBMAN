@@ -3,10 +3,10 @@ import './SubscriptionList.css';
 import AddSubscriptionModal from '../AddSubscriptionModal/AddSubscriptionModal';
 
 const INITIAL_SUBSCRIPTIONS = [
-    { id: 1, service: 'Netflix', price: '$12.99', renewalDate: '2024-07-15' , status: 'Active'},
-    { id: 2, service: 'Spotify', price: '$9.99', renewalDate: '2024-07-20' , status: 'Active'},
-    { id: 3, service: 'Hulu', price: '$11.99', renewalDate: '2024-07-25' , status: 'Expired'},
-    { id: 4, service: 'Disney+', price: '$7.99', renewalDate: '2024-07-30' , status: 'Active'},
+    { id: 1, service: 'Netflix', price: '$12.99', payCycle: 'Monthly', renewalDate: '2024-07-15' , status: 'Active'},
+    { id: 2, service: 'Spotify', price: '$9.99', payCycle: 'Monthly', renewalDate: '2024-07-20' , status: 'Active'},
+    { id: 3, service: 'Hulu', price: '$11.99', payCycle: 'Monthly', renewalDate: '2024-07-25' , status: 'Expired'},
+    { id: 4, service: 'Disney+', price: '$7.99', payCycle: 'Monthly', renewalDate: '2024-07-30' , status: 'Active'},
 ]
 
 const SubscriptionList: React.FC = () => {
@@ -15,7 +15,7 @@ const SubscriptionList: React.FC = () => {
 
     const [subscriptions, setSubscriptions] = useState(INITIAL_SUBSCRIPTIONS);
 
-    const handleAddSubscription = (data: { service: string; price: string; renewalDate: string , status: string }) => {
+    const handleAddSubscription = (data: { service: string; price: string; payCycle: string; renewalDate: string , status: string }) => {
         const newSubscription = {
             id: subscriptions.length + 1,
             ...data
@@ -36,6 +36,7 @@ const SubscriptionList: React.FC = () => {
                     <tr>
                         <th style={{textAlign: 'left'}}>Service</th>
                         <th>Price</th>
+                        <th>Pay Cycle</th>
                         <th>Renewal Date</th>
                         <th>Status</th>
                     </tr>
@@ -48,6 +49,7 @@ const SubscriptionList: React.FC = () => {
                                 {sub.service}
                             </td>
                             <td>{sub.price}</td>
+                            <td>{sub.payCycle}</td>
                             <td>{sub.renewalDate}</td>
                             <td>
                                 <span className={`status-badge ${sub.status.toLowerCase()}`}>

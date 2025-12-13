@@ -51,6 +51,11 @@
     text-align: center;
 }
 
+.form-input.error {
+    border: 2px solid #ff4d4d;
+    background-color: #3a1a1a;
+}
+
 
 .form-actions {
     display: flex;
