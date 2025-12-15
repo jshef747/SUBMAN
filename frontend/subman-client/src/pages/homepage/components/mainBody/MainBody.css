@@ -1,0 +1,45 @@
+.main-body-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 50px 200px 20px 200px;
+}
+
+.main-text-wrapper {
+  width: 30%;
+  text-align: left;
+}
+.main-text-wrapper h1 {
+  font-size: 3rem;
+  font-family: var(--font-body);
+  margin-bottom: 20px;
+  line-height: 1.1;
+}
+.main-text-wrapper p {
+  font-size: 1.5rem;
+  font-family: var(--font-body);
+  margin-bottom: 30px;
+  color: #c9c6c6;
+}
+.main-image {
+  mix-blend-mode: lighten;
+}
+
+.get-started {
+  --light-green: #1cc73b;
+  --neon-green: #39ff14;
+  font-family: var(--font-body);
+  background-color: var(--light-green);
+  color: white;
+  border: none;
+  padding: 0.3rem 2rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: ease 0.3s;
+  background-image: linear-gradient(
+    to left,
+    var(--light-green),
+    var(--neon-green)
+  );
+}
