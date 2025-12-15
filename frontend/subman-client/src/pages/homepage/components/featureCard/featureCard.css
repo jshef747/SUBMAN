@@ -1,0 +1,32 @@
+.feature-card {
+  background-color: rgb(20, 20, 20);
+  border-radius: 12px;
+  padding: 30px;
+  width: 300px;
+
+  text-align: left;
+  color: #fff;
+}
+
+.feature-card-icon {
+  font-size: 2rem;
+  color: #50e3c2;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.feature-card-title {
+  font-size: 1.25rem;
+  font-family: var(--font-body);
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.feature-card-description {
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+  line-height: 1.5;
+  color: #a0a0a0;
+}
