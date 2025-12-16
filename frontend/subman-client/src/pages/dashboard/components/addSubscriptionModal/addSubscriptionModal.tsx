@@ -18,9 +18,7 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
 
   if (!isOpen) return null;
 
-  const dataLabelName = () => { 
-    return payCycle === 'Monthly' ? 'Select renewal day' : 'Select renewal month';
-  }
+
 
   const handleSave = () => {
 
@@ -36,7 +34,7 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
         hasError = true;
     }
 
-    if (!renewalDate) {
+    if (!validateDateInput(renewalDate)) {
         setDateInputClass('form-input error');
         hasError = true;
     }
@@ -58,7 +56,10 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
   }
 
 
-  
+  const validateDateInput = (input: string): boolean => {
+    const datePattern = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])$/;
+    return datePattern.test(input);
+  }
 
   return (
     <div className='modal-overlay' onClick={onClose}>
@@ -70,8 +71,8 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
                     <input type="text" className={serviceInputClass} placeholder='Enter service name' value={service} onChange={(e) => setService(e.target.value)} />
                 </div>
                 <div className='form-group'>
-                    <label className='form-label'>Monthly Cost</label>
-                    <input type="number" className={priceInputClass} placeholder='Enter monthly cost' value={price} onChange={(e) => setPrice(e.target.value)} />
+                    <label className='form-label'>{payCycle === 'Monthly' ? 'Monthly Cost' : 'Yearly Cost'}</label>
+                    <input type="number" className={priceInputClass} placeholder={payCycle === 'Monthly' ? 'Enter monthly cost' : 'Enter yearly cost'} value={price} onChange={(e) => setPrice(e.target.value)} />
                 </div>
                 <div className='form-group'>
                     <label className='form-label'>Pay Cycle</label>
@@ -82,8 +83,8 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
                     </select>
                 </div>
                 <div className='form-group'>
-                    <label className='form-label'>{payCycle ? dataLabelName() : 'Select pay cycle first'}</label>
-                    <input type="number" className={dateInputClass} value={renewalDate} onChange={(e) => setRenewalDate(e.target.value.toString())} />
+                    <label className='form-label'>Enter day and month</label>
+                    <input type="text" className={dateInputClass} value={renewalDate} placeholder="DD/MM" onChange={(e) => setRenewalDate(e.target.value.toString())} />
                 </div>
                 <div className='form-actions'>
                     <button type="button" className='cancel-button' onClick={onClose}>Cancel</button>

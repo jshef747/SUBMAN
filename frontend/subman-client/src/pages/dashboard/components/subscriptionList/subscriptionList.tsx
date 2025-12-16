@@ -28,18 +28,23 @@ const SubscriptionList: React.FC = () => {
         let nextPaymentDate: Date;
 
         if (payCycle === 'Monthly') {
-            nextPaymentDate = new Date(today.getFullYear(), today.getMonth(), parseInt(renewalDate));
+            const [day] = renewalDate.split('/').map(Number);
+            nextPaymentDate = new Date(today.getFullYear(), today.getMonth(), day);
+            
             if (nextPaymentDate < today) {
                 nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
             }
-        } else { // Yearly
-            nextPaymentDate = new Date(today.getFullYear(), parseInt(renewalDate) - 1, today.getDate());
+        } else {
+            const [day, month] = renewalDate.split('/').map(Number);
+            nextPaymentDate = new Date(today.getFullYear(), month - 1, day);
+            
             if (nextPaymentDate < today) {
                 nextPaymentDate.setFullYear(nextPaymentDate.getFullYear() + 1);
             }
         }
 
-        return nextPaymentDate.toLocaleDateString();
+        const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+        return nextPaymentDate.toLocaleDateString(undefined, options);
     }
 
     return (
@@ -56,7 +61,6 @@ const SubscriptionList: React.FC = () => {
                         <th>Service</th>
                         <th>Price</th>
                         <th>Pay Cycle</th>
-                        <th>Renewal day/month</th>
                         <th>Next Payment Date</th>
                         <th className='status-head'>Status</th>
                     </tr>
@@ -70,7 +74,6 @@ const SubscriptionList: React.FC = () => {
                             </td>
                             <td>{sub.price}</td>
                             <td>{sub.payCycle}</td>
-                            <td className='renDate-cell'>{sub.renewalDate}</td>
                             <td className='next-cell'>{calculateNextPaymentDate(sub.payCycle, sub.renewalDate)}</td>
                             <td>
                                 <span className={`status-badge ${sub.status.toLowerCase()}`}>

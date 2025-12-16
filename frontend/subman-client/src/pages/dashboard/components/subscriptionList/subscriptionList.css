@@ -1,3 +1,26 @@
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+select.form-input {
+    /* Keep your existing rules */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    /* ADD THIS to force the selected text to the center */
+    text-align: center;
+    text-align-last: center; /* Vital for Chrome/Safari */
+}
+
+
 .sub-list-card {
     background-color: var(--card-dark);
     border-radius: 15px;
@@ -85,5 +108,5 @@
 }
 
 .next-cell {
-    padding-left: 2rem;
+    padding-left: 0.5rem;
 }
