@@ -18,12 +18,19 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
 
   if (!isOpen) return null;
 
-
-
+  const resetInputClasses = () => {
+    setServiceInputClass('form-input');
+    setPriceInputClass('form-input');
+    setDateInputClass('form-input');
+    setPayCycleInputClass('form-input');
+  } 
+  
   const handleSave = () => {
 
+    resetInputClasses();
+
     let hasError: boolean = false;
-    
+
     if (!service) {
         setServiceInputClass('form-input error');
         hasError = true;
@@ -61,6 +68,7 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
     return datePattern.test(input);
   }
 
+
   return (
     <div className='modal-overlay' onClick={onClose}>
         <div className='modal-content' onClick={(e) => e.stopPropagation()}>
@@ -83,11 +91,11 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
                     </select>
                 </div>
                 <div className='form-group'>
-                    <label className='form-label'>Enter day and month</label>
+                    <label className='form-label'>Next due date</label>
                     <input type="text" className={dateInputClass} value={renewalDate} placeholder="DD/MM" onChange={(e) => setRenewalDate(e.target.value.toString())} />
                 </div>
                 <div className='form-actions'>
-                    <button type="button" className='cancel-button' onClick={onClose}>Cancel</button>
+                    <button type="button" className='cancel-button' onClick={() => {resetInputClasses(); onClose();}}>Cancel</button>
                     <button type="button" className='submit-button' onClick={handleSave}>Add Subscription</button>
                 </div>
             </form>
