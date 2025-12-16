@@ -60,6 +60,17 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
         <button type="submit" className="auth-button">
           {isSignup ? "Sign Up" : "Log In"}
         </button>
+        <button
+          type="button"
+          className="google-btn"
+          onClick={() => console.log("Google Auth Clicked")}
+        >
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
+            alt="Google logo"
+          />
+          {isSignup ? "Sign up with Google" : "Sign in with Google"}
+        </button>
         <p className="auth-footer">
           {type === "signup" ? (
             <>

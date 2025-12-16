@@ -98,3 +98,35 @@
 .input-line input.input-error {
   border-color: #ff4d4d;
 }
+
+.google-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px; /* Matches the height of your auth-button */
+  margin-top: 15px; /* Creates space between the two buttons */
+
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.google-btn img {
+  width: 18px;
+  height: 18px;
+}
+
+.google-btn:hover {
+  background-color: #f1f1f1;
+}
+
+.google-btn:active {
+  transform: scale(0.98); /* Slight click effect */
+}
