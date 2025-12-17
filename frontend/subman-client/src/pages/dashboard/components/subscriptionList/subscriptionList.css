@@ -111,3 +111,15 @@ select.form-input {
     padding-left: 0.5rem;
 }
 
+.delete-button {
+    background-color: transparent;
+    border: none;
+    color: #ff4d4d;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.delete-button:hover {
+    color: #bb1f1f;
+}
+

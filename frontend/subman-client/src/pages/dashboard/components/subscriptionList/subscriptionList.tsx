@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import './SubscriptionList.css';
 import AddSubscriptionModal from '../AddSubscriptionModal/AddSubscriptionModal';
+import { MdDelete } from "react-icons/md";
 
 const INITIAL_SUBSCRIPTIONS = [
     { id: 1, service: 'Netflix', price: '$12.99', payCycle: 'Monthly', renewalDate: '15' , status: 'Active'},
@@ -21,6 +22,10 @@ const SubscriptionList: React.FC = () => {
             ...data
         };
         setSubscriptions((prevSubs) => [...prevSubs, newSubscription]);
+    }
+
+    const handleDeleteSubscription = (id: number) => {
+        setSubscriptions((prevSubs) => prevSubs.filter((sub) => sub.id !== id));
     }
     
     const calculateNextPaymentDate = (payCycle: string, renewalDate: string): string => {
@@ -63,6 +68,7 @@ const SubscriptionList: React.FC = () => {
                         <th>Pay Cycle</th>
                         <th>Next Payment Date</th>
                         <th className='status-head'>Status</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -79,6 +85,9 @@ const SubscriptionList: React.FC = () => {
                                 <span className={`status-badge ${sub.status.toLowerCase()}`}>
                                     {sub.status}
                                 </span>
+                            </td>
+                            <td>
+                                <button className='delete-button' onClick={() => handleDeleteSubscription(sub.id)}><MdDelete size={24} /></button>
                             </td>
                         </tr>
                     ))}
