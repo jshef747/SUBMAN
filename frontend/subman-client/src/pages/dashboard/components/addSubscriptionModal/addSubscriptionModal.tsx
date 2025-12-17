@@ -15,19 +15,26 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
   const [priceInputClass, setPriceInputClass] = useState<string>('form-input');
   const [dateInputClass, setDateInputClass] = useState<string>('form-input');
   const [payCycleInputClass, setPayCycleInputClass] = useState<string>('form-input');
+  const [showDateError, setShowDateError] = useState<boolean>(false);
+  const [showCostError, setShowCostError] = useState<boolean>(false);
 
   if (!isOpen) return null;
 
-  const resetInputClasses = () => {
+  const resetInput= () => {
     setServiceInputClass('form-input');
     setPriceInputClass('form-input');
     setDateInputClass('form-input');
     setPayCycleInputClass('form-input');
+    setShowDateError(false);
+    setShowCostError(false);
+    setService('');
+    setPrice('');
+    setRenewalDate('');
   } 
   
   const handleSave = () => {
 
-    resetInputClasses();
+    resetInput();
 
     let hasError: boolean = false;
 
@@ -36,13 +43,23 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
         hasError = true;
     }
 
-    if (!price) {
+    if (!Number(price) || Number(price) <= 0) {
+        setShowCostError(true);
+        hasError = true;
+    }
+
+    else if (!price) {
         setPriceInputClass('form-input error');
         hasError = true;
     }
 
-    if (!validateDateInput(renewalDate)) {
+    if (!renewalDate) {
         setDateInputClass('form-input error');
+        hasError = true;
+    }
+
+    else if (!validateDateInput(renewalDate)) {
+        setShowDateError(true);
         hasError = true;
     }
 
@@ -80,8 +97,13 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
                 </div>
                 <div className='form-group'>
                     <label className='form-label'>{payCycle === 'Monthly' ? 'Monthly Cost' : 'Yearly Cost'}</label>
-                    <input type="number" className={priceInputClass} placeholder={payCycle === 'Monthly' ? 'Enter monthly cost' : 'Enter yearly cost'} value={price} onChange={(e) => setPrice(e.target.value)} />
+                    <input type="number" className={priceInputClass} placeholder={payCycle === 'Monthly' ? 'Enter monthly cost' : 'Enter yearly cost'} value={price} onChange={(e) => {
+                        setPrice(e.target.value);
+                        setShowCostError(false);
+                    }} />
                 </div>
+                {showCostError && (<div className='date-error-message'>Invalid cost. Please enter a positive number.</div>
+                    )}
                 <div className='form-group'>
                     <label className='form-label'>Pay Cycle</label>
                     <select className={payCycleInputClass} value={payCycle} onChange={(e) => setPayCycle(e.target.value)}>
@@ -92,10 +114,17 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
                 </div>
                 <div className='form-group'>
                     <label className='form-label'>Next due date</label>
-                    <input type="text" className={dateInputClass} value={renewalDate} placeholder="DD/MM" onChange={(e) => setRenewalDate(e.target.value.toString())} />
+                    <input type="text" className={dateInputClass} value={renewalDate} placeholder="DD/MM" onChange={(e) => {
+                        setRenewalDate(e.target.value.toString())
+                        setShowDateError(false);
+                        }} />
                 </div>
+                {showDateError && (
+                    <div className='date-error-message'>Invalid date format. Please use DD/MM.</div>
+                )}
+                <p className='date-disclaimer'>* When you enter a date in the past, the next payment date will be adjusted accordingly.</p>
                 <div className='form-actions'>
-                    <button type="button" className='cancel-button' onClick={() => {resetInputClasses(); onClose();}}>Cancel</button>
+                    <button type="button" className='cancel-button' onClick={() => {resetInput(); onClose();}}>Cancel</button>
                     <button type="button" className='submit-button' onClick={handleSave}>Add Subscription</button>
                 </div>
             </form>

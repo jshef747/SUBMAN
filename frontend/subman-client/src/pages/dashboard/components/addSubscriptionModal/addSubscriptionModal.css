@@ -1,3 +1,15 @@
+@keyframes slideDownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-10px); /* Start slightly higher */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0); /* End in natural position */
+    }
+}
+
+
 .modal-overlay {
     display: flex;
     justify-content: center;
@@ -64,7 +76,7 @@
 .form-actions {
     display: flex;
     justify-content: space-between;
-    margin-top: 2rem;
+    margin-top: 5rem;
 }
 
 button {
@@ -106,3 +118,22 @@ select.form-input {
     background-color: #2a2a2a;
     color: var(--text-white);
 }   
+
+
+.date-disclaimer {
+    font-size: 0.6rem;
+    color: var(--text-light);
+    margin-top: 2rem;
+    margin-bottom: 0.3rem;
+}
+
+.date-error-message {
+    border: #d25050 1px solid;
+    font-size: 0.6rem;
+    color: #ff4d4d;
+    margin-top: -1.55rem;
+    margin-bottom: 1rem;
+    margin-left: 12.5rem;
+    text-align: center;
+    animation: slideDownFade 0.3s ease-in-out forwards;
+}
