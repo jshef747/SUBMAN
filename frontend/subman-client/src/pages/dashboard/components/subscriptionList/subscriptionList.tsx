@@ -5,13 +5,17 @@ import { MdDelete } from "react-icons/md";
 import { IoPencil } from "react-icons/io5";
 
 const INITIAL_SUBSCRIPTIONS = [
-    { id: 1, service: 'Netflix', price: '$12.99', payCycle: 'Monthly', renewalDate: '15' , status: 'Active'},
-    { id: 2, service: 'Spotify', price: '$9.99', payCycle: 'Monthly', renewalDate: '20' , status: 'Active'},
-    { id: 3, service: 'Hulu', price: '$11.99', payCycle: 'Monthly', renewalDate: '25' , status: 'Expired'},
-    { id: 4, service: 'Disney+', price: '$7.99', payCycle: 'Monthly', renewalDate: '30' , status: 'Active'},
+    { id: 1, service: 'Netflix', price: '$12.99', payCycle: 'Monthly', renewalDate: '15/12' , status: 'Active'},
+    { id: 2, service: 'Spotify', price: '$9.99', payCycle: 'Monthly', renewalDate: '20/11' , status: 'Active'},
+    { id: 3, service: 'Hulu', price: '$11.99', payCycle: 'Monthly', renewalDate: '25/10' , status: 'Expired'},
+    { id: 4, service: 'Disney+', price: '$7.99', payCycle: 'Monthly', renewalDate: '30/09' , status: 'Active'},
 ]
 
 const SubscriptionList: React.FC = () => {
+
+    const [editingSubscriptionId, setEditingSubscriptionId] = useState<number | null>(null);
+
+    const [isEditMode, setIsEditMode] = useState(false);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -23,6 +27,10 @@ const SubscriptionList: React.FC = () => {
             ...data
         };
         setSubscriptions((prevSubs) => [...prevSubs, newSubscription]);
+    }
+
+    const handleEditSubscription = (id: number, data: { service: string; price: string; payCycle: string; renewalDate: string , status: string }) => {
+        setSubscriptions((prevSubs) => prevSubs.map((sub) => sub.id === id ? { id, ...data } : sub));
     }
 
     const handleDeleteSubscription = (id: number) => {
@@ -77,7 +85,11 @@ const SubscriptionList: React.FC = () => {
                     {subscriptions.map((sub) => (
                         <tr key={sub.id} className='table-row'>
                             <td>
-                                <button className='edit-button'><IoPencil size={19} /></button>
+                                <button className='edit-button' onClick={() => {
+                                    setIsEditMode(true);
+                                    setEditingSubscriptionId(sub.id);
+                                    setIsModalOpen(true);
+                                }}><IoPencil size={19} /></button>
                             </td>
                             <td className='service-cell'>
                                 {}
@@ -99,7 +111,18 @@ const SubscriptionList: React.FC = () => {
                 </tbody>
             </table>
 
-            <AddSubscriptionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleAddSubscription} />
+           <AddSubscriptionModal
+            key={isEditMode ? editingSubscriptionId : 'add-modal'} 
+            isOpen={isModalOpen} 
+            onClose={() => {
+                setIsModalOpen(false);
+                setIsEditMode(false); // 2. Reset edit mode on close
+                setEditingSubscriptionId(null); // 2. Clear the ID on close
+                }} 
+            onSave={handleAddSubscription} 
+            editData={isEditMode ? subscriptions.find(sub => sub.id === editingSubscriptionId) : undefined}
+            onEdit={(data) => handleEditSubscription(editingSubscriptionId!, data)}
+                />
         </div>
     )
 }

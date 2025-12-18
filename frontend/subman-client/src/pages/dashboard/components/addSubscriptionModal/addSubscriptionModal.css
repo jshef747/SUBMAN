@@ -1,14 +1,13 @@
 @keyframes slideDownFade {
     from {
         opacity: 0;
-        transform: translateY(-10px); /* Start slightly higher */
+        transform: translateY(-10px);
     }
     to {
         opacity: 1;
-        transform: translateY(0); /* End in natural position */
+        transform: translateY(0);
     }
 }
-
 
 .modal-overlay {
     display: flex;
@@ -54,6 +53,11 @@
     text-align: center;
 }
 
+/* ========================================= */
+/* INPUTS & BUTTONS                          */
+/* ========================================= */
+
+/* Used by Text Inputs AND the DatePicker Input */
 .form-input {
     width: 50%;
     padding: 0.4rem;
@@ -62,7 +66,6 @@
     background-color: #2a2a2a;
     color: var(--text-white);
     text-align: center;
-
     box-sizing: border-box;
     line-height: normal;
 }
@@ -72,6 +75,10 @@
     background-color: #3a1a1a;
 }
 
+/* Override specifically for the DatePicker input to ensure it fills the wrapper */
+.react-datepicker__input-container input {
+    width: 100% !important;
+}
 
 .form-actions {
     display: flex;
@@ -112,13 +119,9 @@ select.form-input {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+    text-align: center;
+    text-align-last: center;
 }
-
-.dropdown-cycle {
-    background-color: #2a2a2a;
-    color: var(--text-white);
-}   
-
 
 .date-disclaimer {
     font-size: 0.6rem;
@@ -136,4 +139,167 @@ select.form-input {
     margin-left: 12.5rem;
     text-align: center;
     animation: slideDownFade 0.3s ease-in-out forwards;
+}
+
+/* ========================================= */
+/* REACT DATEPICKER DARK THEME OVERRIDES     */
+/* ========================================= */
+
+/* 1. Force the wrapper to fill the container */
+.date-picker-wrapper {
+    width: 100%;
+}
+.date-picker-wrapper .react-datepicker-wrapper {
+    width: 100%;
+}
+
+/* 2. The Main Calendar Card */
+.dark-theme-calendar {
+    font-family: inherit;
+    background-color: #1e1e1e !important;
+    border: 1px solid #333 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+    padding: 10px !important;
+}
+
+/* 3. Header (Month/Year) */
+.dark-theme-calendar .react-datepicker__header {
+    background-color: #1e1e1e !important;
+    border-bottom: 1px solid #333 !important;
+}
+
+.dark-theme-calendar .react-datepicker__current-month {
+    color: white !important;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.dark-theme-calendar .react-datepicker__day-name {
+    color: #888 !important;
+}
+
+/* 4. Days (Numbers) */
+.dark-theme-calendar .react-datepicker__day {
+    color: #e0e0e0 !important;
+    border-radius: 50% !important;
+    transition: all 0.2s ease;
+}
+
+.dark-theme-calendar .react-datepicker__day:hover {
+    background-color: #333 !important;
+    color: white !important;
+}
+
+/* 5. Selected Day */
+.dark-theme-calendar .react-datepicker__day--selected {
+    background-color: var(--light-green) !important; 
+    color: black !important;
+    font-weight: bold;
+}
+
+/* 6. Today Grid */
+.dark-theme-calendar .react-datepicker__day--today {
+    border: 1px solid var(--light-green);
+    background-color: transparent;
+    font-weight: bold;
+}
+
+/* 7. Navigation Arrows (Left/Right) */
+.dark-theme-calendar .react-datepicker__navigation-icon::before {
+    border-color: #888 !important;
+    height: 7px !important;
+    width: 7px !important;
+    top: 3px !important;
+}
+.dark-theme-calendar .react-datepicker__navigation:hover *::before {
+    border-color: white !important;
+}
+
+/* ========================================= */
+/* YEAR DROPDOWN STYLING                    */
+/* ========================================= */
+
+/* 1. The "2025" Text (Trigger) */
+.dark-theme-calendar .react-datepicker__year-read-view {
+    background-color: transparent !important; /* <--- REMOVES THE GRAY BOX */
+    border: none !important;                  /* <--- REMOVES BORDER IF ANY */
+    color: white !important;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+/* 2. The Arrow next to the year */
+.dark-theme-calendar .react-datepicker__year-read-view--down-arrow {
+    border-color: white !important;
+    top: 0.57rem !important;
+    left: 4.3rem !important;
+    height: 7px !important;
+    width: 7px !important;
+}
+.dark-theme-calendar .react-datepicker__year-read-view--down-arrow:hover {
+    border-color: var(--light-green) !important;
+}
+
+/* 3. The Dropdown Menu (The list) */
+.dark-theme-calendar .react-datepicker__year-dropdown {
+    background-color: #1e1e1e !important;
+    border: 1px solid #444 !important;
+    color: white !important;
+    width: 80px;
+    z-index: 100; /* Ensures it floats above everything */
+}
+
+/* 4. Individual Years */
+.dark-theme-calendar .react-datepicker__year-option {
+    color: #ccc !important;
+    padding: 5px 0;
+}
+
+.dark-theme-calendar .react-datepicker__year-option:hover {
+    background-color: #333 !important;
+    color: var(--light-green) !important;
+    font-weight: bold;
+}
+
+/* 5. Scroll Arrows inside list */
+.dark-theme-calendar .react-datepicker__navigation--years-upcoming,
+.dark-theme-calendar .react-datepicker__navigation--years-previous {
+    border-color: #888 !important;
+    background: none !important;
+}
+
+/* 6. Selected Year highlight */
+.dark-theme-calendar .react-datepicker__year-option--selected_year {
+    color: var(--light-green) !important;
+    font-weight: bold;
+}
+
+/* ========================================= */
+/* ARROW CLEANUP (REMOVE LINES/ARTIFACTS)    */
+/* ========================================= */
+
+/* 1. Reset the button container to hide text and borders */
+.dark-theme-calendar .react-datepicker__navigation {
+    background: transparent !important;
+    border: none !important;
+    overflow: hidden !important; /* Hides the "Next Month" text */
+    text-indent: -999em !important; /* Pushes text out of view */
+    outline: none !important;
+    height: 32px !important; /* Ensure it's tall enough not to cut off the arrow */
+}
+
+/* 2. Ensure the icon container inside doesn't have a border */
+.dark-theme-calendar .react-datepicker__navigation-icon {
+    font-size: 0 !important; /* Ensures text size is 0 */
+    border: none !important;
+    top: 0 !important;
+}
+
+/* 3. The arrow itself (Your existing styles - ensure no background here) */
+.dark-theme-calendar .react-datepicker__navigation-icon::before {
+    background: transparent !important; 
+    /* Keep your existing size/width settings here */
 }
