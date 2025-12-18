@@ -123,3 +123,15 @@ select.form-input {
     color: #bb1f1f;
 }
 
+.edit-button {
+    background-color: transparent;
+    border: none;
+    color: var(--text-white);
+    cursor: pointer;
+    transition: color 0.3s ease;
+    margin-right: -2rem;
+}
+
+.edit-button:hover {
+    color: var(--light-green);
+}

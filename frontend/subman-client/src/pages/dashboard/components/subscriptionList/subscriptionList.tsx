@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import './SubscriptionList.css';
 import AddSubscriptionModal from '../AddSubscriptionModal/AddSubscriptionModal';
 import { MdDelete } from "react-icons/md";
+import { IoPencil } from "react-icons/io5";
 
 const INITIAL_SUBSCRIPTIONS = [
     { id: 1, service: 'Netflix', price: '$12.99', payCycle: 'Monthly', renewalDate: '15' , status: 'Active'},
@@ -63,6 +64,7 @@ const SubscriptionList: React.FC = () => {
             <table className='sub-table'>
                 <thead>
                     <tr>
+                        <th></th>
                         <th>Service</th>
                         <th>Price</th>
                         <th>Pay Cycle</th>
@@ -74,6 +76,9 @@ const SubscriptionList: React.FC = () => {
                 <tbody>
                     {subscriptions.map((sub) => (
                         <tr key={sub.id} className='table-row'>
+                            <td>
+                                <button className='edit-button'><IoPencil size={19} /></button>
+                            </td>
                             <td className='service-cell'>
                                 {}
                                 {sub.service}
