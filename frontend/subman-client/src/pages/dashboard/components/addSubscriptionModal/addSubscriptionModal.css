@@ -154,6 +154,11 @@ select.form-input {
     width: 100% !important; 
 }   
 
-.react-datepicker__navigation-icon::before, .react-datepicker__year-read-view--down-arrow, .react-datepicker__month-read-view--down-arrow, .react-datepicker__month-year-read-view--down-arrow {
-    border-color: var(--light-green);
+.react-datepicker__month-container {
+    float: left;
+    background-color: var(--card-dark)
+}
+
+.react-datepicker__day-name {
+    color: var(--text-white);
 }

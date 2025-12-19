@@ -125,7 +125,8 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
                     showYearDropdown
                     scrollableYearDropdown
                     yearDropdownItemNumber={7} 
-                    wrapperClassName='date-picker-wrapper'/>
+                    wrapperClassName='date-picker-wrapper'
+                    />
                     </div>
                 </div>
                 <p className='date-disclaimer'>* When you enter a date in the past, the next payment date will be adjusted accordingly.</p>
