@@ -137,3 +137,23 @@ select.form-input {
     text-align: center;
     animation: slideDownFade 0.3s ease-in-out forwards;
 }
+
+.date-picker-container {
+    width: 50%;
+}
+
+.date-picker-wrapper {
+    width: 100%;
+}
+
+.date-picker-wrapper .react-datepicker__input-container {
+    width: 100%;
+}
+
+.date-picker-wrapper input {
+    width: 100% !important; 
+}   
+
+.react-datepicker__navigation-icon::before, .react-datepicker__year-read-view--down-arrow, .react-datepicker__month-read-view--down-arrow, .react-datepicker__month-year-read-view--down-arrow {
+    border-color: var(--light-green);
+}

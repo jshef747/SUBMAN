@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import './AddSubscriptionModal.css'
+
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -10,12 +13,14 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
   const [service, setService] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [payCycle, setPayCycle] = useState<string>('');
-  const [renewalDate, setRenewalDate] = useState<string>('');
+
+  const [renewalDate, setRenewalDate] = useState<Date | null>(null);
+
   const [serviceInputClass, setServiceInputClass] = useState<string>('form-input');
   const [priceInputClass, setPriceInputClass] = useState<string>('form-input');
-  const [dateInputClass, setDateInputClass] = useState<string>('form-input');
   const [payCycleInputClass, setPayCycleInputClass] = useState<string>('form-input');
-  const [showDateError, setShowDateError] = useState<boolean>(false);
+  const [renewalDateInputClass, setRenewalDateInputClass] = useState<string>('form-input');
+
   const [showCostError, setShowCostError] = useState<boolean>(false);
 
   if (!isOpen) return null;
@@ -23,13 +28,11 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
   const resetInput= () => {
     setServiceInputClass('form-input');
     setPriceInputClass('form-input');
-    setDateInputClass('form-input');
     setPayCycleInputClass('form-input');
-    setShowDateError(false);
     setShowCostError(false);
     setService('');
     setPrice('');
-    setRenewalDate('');
+    setRenewalDate(null);
   } 
   
   const handleSave = () => {
@@ -53,18 +56,13 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
         hasError = true;
     }
 
-    if (!renewalDate) {
-        setDateInputClass('form-input error');
-        hasError = true;
-    }
-
-    else if (!validateDateInput(renewalDate)) {
-        setShowDateError(true);
-        hasError = true;
-    }
-
     if (!payCycle) {
         setPayCycleInputClass('form-input error');
+        hasError = true;
+    }
+
+    if (!renewalDate) {
+        setRenewalDateInputClass('form-input error');
         hasError = true;
     }
 
@@ -72,18 +70,19 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
         return;
     }
 
-    onSave({ service, price: `$${price}`, payCycle, renewalDate, status: 'Active' });
-    setService('');
-    setPrice('');
-    setRenewalDate('');
+    const day = renewalDate!.getDate().toString().padStart(2, '0');
+    const month = (renewalDate!.getMonth() + 1).toString().padStart(2, '0');
+    const year = renewalDate!.getFullYear();
+    const formattedDate = `${day}/${month}/${year}`;
+
+    onSave({ service, price: `$${price}`, payCycle, renewalDate: formattedDate, status: 'Active' });
+    
+    resetInput();
+
     onClose();
   }
 
 
-  const validateDateInput = (input: string): boolean => {
-    const datePattern = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])$/;
-    return datePattern.test(input);
-  }
 
 
   return (
@@ -114,14 +113,21 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
                 </div>
                 <div className='form-group'>
                     <label className='form-label'>Next due date</label>
-                    <input type="text" className={dateInputClass} value={renewalDate} placeholder="DD/MM" onChange={(e) => {
-                        setRenewalDate(e.target.value.toString())
-                        setShowDateError(false);
-                        }} />
+                    <div className='date-picker-container'>
+                    <DatePicker
+                    selected={renewalDate}
+                    onChange={(date : Date | null) => {
+                      setRenewalDate(date);
+                    }}
+                    dateFormat={'dd/MM/yyyy'}
+                    placeholderText='DD/MM/YYYY'
+                    className={renewalDateInputClass}
+                    showYearDropdown
+                    scrollableYearDropdown
+                    yearDropdownItemNumber={7} 
+                    wrapperClassName='date-picker-wrapper'/>
+                    </div>
                 </div>
-                {showDateError && (
-                    <div className='date-error-message'>Invalid date format. Please use DD/MM.</div>
-                )}
                 <p className='date-disclaimer'>* When you enter a date in the past, the next payment date will be adjusted accordingly.</p>
                 <div className='form-actions'>
                     <button type="button" className='cancel-button' onClick={() => {resetInput(); onClose();}}>Cancel</button>
