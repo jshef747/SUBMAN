@@ -1,7 +1,6 @@
 import React from "react";  
 import './Dashboard.css';
 
-import SpendingChart from "./components/SpendingChart/SpendingChart";
 import SubscriptionList from "./components/subscriptionList/SubscriptionList";
 
 
