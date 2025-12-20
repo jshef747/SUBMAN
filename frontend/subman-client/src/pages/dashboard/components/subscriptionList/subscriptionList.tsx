@@ -106,7 +106,7 @@ const SubscriptionList: React.FC = () => {
                                 </span>
                             </td>
                             <td>
-                                <button className='delete-button' onClick={() => handleDeleteSubscription(sub.id)}><MdDelete size={24} /></button>
+                                <button className='delete-button' onClick={() => handleDeleteSubscription(sub.id!)}><MdDelete size={24} /></button>
                             </td>
                         </tr>
                     ))}
