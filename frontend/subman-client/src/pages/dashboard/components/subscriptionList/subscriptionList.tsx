@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import './SubscriptionList.css';
-import AddSubscriptionModal from '../AddSubscriptionModal/AddSubscriptionModal';
+import AddSubscriptionModal from '../addSubscriptionModal/AddSubscriptionModal';
 import { MdDelete } from "react-icons/md";
 import { IoPencil } from "react-icons/io5";
 
@@ -32,7 +32,7 @@ const SubscriptionList: React.FC = () => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const [day, month, year] = renewalDate.split('/').map(Number);
-        let nextDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        const nextDate = new Date(year, month - 1, day);
 
         while (nextDate < today) {
             if (payCycle === 'Monthly') {
