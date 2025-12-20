@@ -29,7 +29,7 @@
     padding: 1.5rem;
     width: 50%;
     max-width: 400px;
-    height: 65%;
+    height: 50%;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     border: 1px solid #333;
@@ -76,7 +76,7 @@
 .form-actions {
     display: flex;
     justify-content: space-between;
-    margin-top: 5rem;
+    margin-top: 3rem;
 }
 
 button {

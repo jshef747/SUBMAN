@@ -3,18 +3,25 @@ import './AddSubscriptionModal.css'
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+
+import type { Subscription } from '../../../../types';
+
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (data: { service: string; price: string; payCycle: string; renewalDate: string , status: string }) => void;
+    onSave: (data: Subscription) => void;
+    editSubscription?: Subscription | null;
 }
 
-const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave }) => {
-  const [service, setService] = useState<string>('');
-  const [price, setPrice] = useState<string>('');
-  const [payCycle, setPayCycle] = useState<string>('');
+const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave, editSubscription }) => {
+  const [service, setService] = useState<string>(editSubscription ? editSubscription.service : '');
+  const [price, setPrice] = useState<string>(editSubscription ? editSubscription.price.replace('$', '') : '');
+  const [payCycle, setPayCycle] = useState<string>(editSubscription ? editSubscription.payCycle : '');
 
-  const [renewalDate, setRenewalDate] = useState<Date | null>(null);
+  const [renewalDate, setRenewalDate] = useState<Date | null>(editSubscription ? (() => {
+    const [day, month, year] = editSubscription.renewalDate.split('/').map(Number);
+    return new Date(year, month - 1, day);
+  })() : null);
 
   const [serviceInputClass, setServiceInputClass] = useState<string>('form-input');
   const [priceInputClass, setPriceInputClass] = useState<string>('form-input');
@@ -75,7 +82,16 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
     const year = renewalDate!.getFullYear();
     const formattedDate = `${day}/${month}/${year}`;
 
-    onSave({ service, price: `$${price}`, payCycle, renewalDate: formattedDate, status: 'Active' });
+    const subscriptionData: Subscription = {
+        id : editSubscription?.id,
+        service,
+        price: `$${price}`,
+        payCycle,
+        renewalDate: formattedDate,
+        status: 'Active', // TODO: need to handle chnage of status for editing  
+    }
+
+    onSave(subscriptionData);
     
     resetInput();
 
@@ -132,7 +148,7 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave })
                 <p className='date-disclaimer'>* When you enter a date in the past, the next payment date will be adjusted accordingly.</p>
                 <div className='form-actions'>
                     <button type="button" className='cancel-button' onClick={() => {resetInput(); onClose();}}>Cancel</button>
-                    <button type="button" className='submit-button' onClick={handleSave}>Add Subscription</button>
+                    <button type="button" className='submit-button' onClick={handleSave}>{editSubscription ? 'Save Changes' : 'Add Subscription'}</button>
                 </div>
             </form>
         </div>

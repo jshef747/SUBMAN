@@ -4,7 +4,9 @@ import AddSubscriptionModal from '../addSubscriptionModal/AddSubscriptionModal';
 import { MdDelete } from "react-icons/md";
 import { IoPencil } from "react-icons/io5";
 
-const INITIAL_SUBSCRIPTIONS = [
+import type { Subscription } from '../../../../types';
+
+const INITIAL_SUBSCRIPTIONS: Subscription[] = [
     { id: 1, service: 'Netflix', price: '$12.99', payCycle: 'Monthly', renewalDate: '15/12/2025' , status: 'Active'},
     { id: 2, service: 'Spotify', price: '$9.99', payCycle: 'Monthly', renewalDate: '01/01/2024' , status: 'Expired'},
     { id: 3, service: 'Amazon Prime', price: '$119.00', payCycle: 'Yearly', renewalDate: '20/11/2024' , status: 'Active'},
@@ -14,14 +16,29 @@ const SubscriptionList: React.FC = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const [subscriptions, setSubscriptions] = useState(INITIAL_SUBSCRIPTIONS);
+    const [subscriptions, setSubscriptions] = useState<Subscription[]>(INITIAL_SUBSCRIPTIONS);
 
-    const handleAddSubscription = (data: { service: string; price: string; payCycle: string; renewalDate: string , status: string }) => {
-        const newSubscription = {
-            id: subscriptions.length + 1,
-            ...data
-        };
-        setSubscriptions((prevSubs) => [...prevSubs, newSubscription]);
+    const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null);
+
+    const handleAddSubscription = (data: Subscription) => {
+        if (editingSubscription) {
+            setSubscriptions((prevSubs) => prevSubs.map(
+                (sub) => sub.id === editingSubscription.id ? { ...data, id: sub.id } : sub));
+        }
+        else {
+            const newSubscription: Subscription = {
+                ...data,
+                id: subscriptions.length > 0 ? subscriptions[subscriptions.length - 1].id! + 1 : 1,
+            };
+            setSubscriptions((prevSubs) => [...prevSubs, newSubscription]);
+        }
+        setIsModalOpen(false);
+        setEditingSubscription(null);
+    }
+
+    const handleEditSubscription = (subscription: Subscription) => {
+        setEditingSubscription(subscription);
+        setIsModalOpen(true);
     }
 
     const handleDeleteSubscription = (id: number) => {
@@ -74,7 +91,7 @@ const SubscriptionList: React.FC = () => {
                     {subscriptions.map((sub) => (
                         <tr key={sub.id} className='table-row'>
                             <td>
-                                <button className='edit-button'><IoPencil size={19} /></button>
+                                <button className='edit-button' onClick={() => handleEditSubscription(sub)}><IoPencil size={19} /></button>
                             </td>
                             <td className='service-cell'>
                                 {}
@@ -96,7 +113,13 @@ const SubscriptionList: React.FC = () => {
                 </tbody>
             </table>
 
-            <AddSubscriptionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={handleAddSubscription} />
+            <AddSubscriptionModal
+             isOpen={isModalOpen} 
+             onClose={() => setIsModalOpen(false)} 
+             onSave={handleAddSubscription}
+             editSubscription={editingSubscription}
+             key={editingSubscription ? editingSubscription.id : 'add'}
+             />
         </div>
     )
 }
