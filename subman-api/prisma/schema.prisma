@@ -16,13 +16,12 @@ datasource db {
 
 model Subscription {
   id          Int      @id @default(autoincrement())
-  service     String
-  price       String
-  payCycle    String
-  renewalDate String
-  status      String
-  
-  // Optional: Created at timestamp just for your records
+  name        String   
+  price       Float
+  currency    String   @default("USD")
+  frequency   String  
+  startDate   DateTime
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
