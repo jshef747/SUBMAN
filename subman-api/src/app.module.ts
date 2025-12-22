@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SubscriptionsController } from './subscriptions/subscriptions.controller';
 import { SubscriptionsService } from './subscriptions/subscriptions.service';
-import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { PrismaModule } from './prisma.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 
