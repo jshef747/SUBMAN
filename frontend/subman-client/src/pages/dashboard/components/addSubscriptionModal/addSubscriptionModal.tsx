@@ -36,6 +36,7 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave, e
     setServiceInputClass('form-input');
     setPriceInputClass('form-input');
     setPayCycleInputClass('form-input');
+    setRenewalDateInputClass('form-input');
     setShowCostError(false);
     setService('');
     setPrice('');
@@ -43,8 +44,6 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave, e
   } 
   
   const handleSave = () => {
-
-    resetInput();
 
     let hasError: boolean = false;
 
@@ -71,6 +70,14 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave, e
     if (!renewalDate) {
         setRenewalDateInputClass('form-input error');
         hasError = true;
+    }
+
+    if (hasError && editSubscription) {
+        setService(service);
+        setPrice(price);
+        setPayCycle(payCycle);
+        setRenewalDate(renewalDate);
+        return;
     }
 
     if (hasError) {
