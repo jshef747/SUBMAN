@@ -1,4 +1,10 @@
-import { IsNumber, IsString, Min, MinLength, IsPositive } from "class-validator";
+import {
+  IsNumber,
+  IsString,
+  Min,
+  MinLength,
+  IsPositive,
+} from 'class-validator';
 
 export class UpdateSubscriptionDto {
   @IsString()
