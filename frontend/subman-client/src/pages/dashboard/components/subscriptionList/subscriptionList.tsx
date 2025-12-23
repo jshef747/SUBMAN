@@ -1,39 +1,89 @@
 import React, {useState} from 'react';
 import './SubscriptionList.css';
-import AddSubscriptionModal from '../addSubscriptionModal/AddSubscriptionModal';
+import AddSubscriptionModal from '../addSubscriptionModal/addSubscriptionModal';
 import { MdDelete } from "react-icons/md";
 import { IoPencil } from "react-icons/io5";
+import { supabase } from '../../../../supabaseClient';
 
 import type { Subscription } from '../../../../types';
-
-const INITIAL_SUBSCRIPTIONS: Subscription[] = [
-    { id: 1, service: 'Netflix', price: '$12.99', payCycle: 'Monthly', renewalDate: '15/12/2025' , status: 'Active'},
-    { id: 2, service: 'Spotify', price: '$9.99', payCycle: 'Monthly', renewalDate: '01/01/2024' , status: 'Expired'},
-    { id: 3, service: 'Amazon Prime', price: '$119.00', payCycle: 'Yearly', renewalDate: '20/11/2024' , status: 'Active'},
-]
 
 const SubscriptionList: React.FC = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const [subscriptions, setSubscriptions] = useState<Subscription[]>(INITIAL_SUBSCRIPTIONS);
+    const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
 
     const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null);
 
-    const handleAddSubscription = (data: Subscription) => {
-        if (editingSubscription) {
-            setSubscriptions((prevSubs) => prevSubs.map(
-                (sub) => sub.id === editingSubscription.id ? { ...data, id: sub.id } : sub));
+
+    const fetchSubscriptions = async() => {
+        const { data: { session }} = await supabase.auth.getSession();
+        if(!session) return;
+
+        try {
+            const response = await fetch('http://localhost:3000/subscriptions', {
+                headers: {
+                    'Authorization': `Bearer ${session.access_token}`
+                }
+            });
+            if(response.ok) {
+                const data = await response.json();
+                const mappedData: Subscription[] = data.map((item: any) => ({
+                    id: item.id,
+                    service: item.name,
+                    price: `$${item.pricePerCycle}`,
+                    payCycle: item.payCycle,
+                    renewalDate: new Date(item.renewalDate).toLocaleDateString('en-GB'),
+                    status: item.isActive ? 'Active' : 'Expired',
+                }));
+                setSubscriptions(mappedData);
+            }
+        } catch (error) {
+            console.error('Error fetching subscriptions:', error);
         }
-        else {
-            const newSubscription: Subscription = {
-                ...data,
-                id: subscriptions.length > 0 ? subscriptions[subscriptions.length - 1].id! + 1 : 1,
-            };
-            setSubscriptions((prevSubs) => [...prevSubs, newSubscription]);
+    };
+
+    React.useEffect(() => {
+        fetchSubscriptions();
+    }, []);
+
+    const handleAddSubscription = async (data: Subscription) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        const [day, month, year] = data.renewalDate.split('/');
+        const isoDate = new Date(`${year}-${month}-${day}`).toISOString();
+
+        const numericPrice = parseFloat(data.price.replace('$', ''));
+
+        const payload = {
+            name: data.service,
+            pricePerCycle: numericPrice,
+            payCycle: data.payCycle,
+            renewalDate: isoDate,
+            isActive: true
+        };
+
+        try {
+            const response = await fetch('http://localhost:3000/subscriptions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                fetchSubscriptions(); 
+                setIsModalOpen(false);
+                setEditingSubscription(null);
+            } else {
+                alert("Failed to save subscription");
+            }
+        } catch (error) {
+            console.error("Error saving:", error);
         }
-        setIsModalOpen(false);
-        setEditingSubscription(null);
     }
 
     const handleEditSubscription = (subscription: Subscription) => {
@@ -41,8 +91,28 @@ const SubscriptionList: React.FC = () => {
         setIsModalOpen(true);
     }
 
-    const handleDeleteSubscription = (id: number) => {
-        setSubscriptions((prevSubs) => prevSubs.filter((sub) => sub.id !== id));
+    const handleDeleteSubscription = async (id: number) => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        
+        try {
+            const response = await fetch(`http://localhost:3000/subscriptions/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${session.access_token}`
+                }
+            });
+            if (response.ok) {
+                setSubscriptions((prevSubs) => prevSubs.filter((sub) => sub.id !== id));
+            }
+            else {
+                alert("Failed to delete subscription"); //TDOD: need to add a popup for this
+            }
+        } catch (error) {
+            //TODO: add a popup for this
+            console.error("Error deleting subscription:", error);
+            alert("An error occurred while deleting the subscription");
+        }
     }
     
     const calculateNextPaymentDate = (payCycle: string, renewalDate: string): string => { 
