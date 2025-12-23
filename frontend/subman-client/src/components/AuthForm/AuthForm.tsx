@@ -1,6 +1,7 @@
 import type React from "react";
 import { useState } from "react";
-import "./AuthForm.css"; // We'll rename signup.css to auth.css
+import { supabase } from "../../supabaseClient";
+import "./AuthForm.css";
 
 interface AuthFormProps {
   type: "login" | "signup";
@@ -22,6 +23,16 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
       return;
     }
     onSubmit(email, password);
+  };
+
+  const handleGoogleAuth = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "http://localhost:5173/",
+      },
+    });
+    if (error) console.error("Login failed:", error.message);
   };
 
   return (
@@ -60,11 +71,7 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
         <button type="submit" className="auth-button">
           {isSignup ? "Sign Up" : "Log In"}
         </button>
-        <button
-          type="button"
-          className="google-btn"
-          onClick={() => console.log("Google Auth Clicked")}
-        >
+        <button type="button" className="google-btn" onClick={handleGoogleAuth}>
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
             alt="Google logo"

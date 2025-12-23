@@ -7,28 +7,30 @@ import { PrismaService } from 'src/prisma.service';
 export class SubscriptionsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createSubscriptionDto: CreateSubscriptionDto) {
+  async create(createSubscriptionDto: CreateSubscriptionDto, userId: string) {
     const { renewalDate, ...rest } = createSubscriptionDto;
     Logger.log('Creating new subscription', 'SubscriptionsService');
     return this.prisma.subscription.create({
       data: {
         ...rest,
         renewalDate: new Date(renewalDate),
+        userId: userId,
       },
     });
   }
 
-  async findAll() {
+  async findAll(userId: string) {
     Logger.log('Fetching all subscriptions', 'SubscriptionsService');
     return this.prisma.subscription.findMany({
+      where: { userId: userId },
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, userId: string) {
     Logger.log(`Fetching subscription with ID ${id}`, 'SubscriptionsService');
     const subscription = await this.prisma.subscription.findUnique({
-      where: { id },
+      where: { id, userId },
     });
 
     if (!subscription) {
@@ -42,7 +44,11 @@ export class SubscriptionsService {
     return subscription;
   }
 
-  async update(id: number, updateSubscriptionDto: UpdateSubscriptionDto) {
+  async update(
+    id: number,
+    updateSubscriptionDto: UpdateSubscriptionDto,
+    userId: string,
+  ) {
     const { renewalDate, ...rest } = updateSubscriptionDto;
     const dataToUpdate: any = { ...rest };
 
@@ -54,7 +60,7 @@ export class SubscriptionsService {
     try {
       Logger.log(`Updating subscription with ID ${id}`, 'SubscriptionsService');
       return await this.prisma.subscription.update({
-        where: { id },
+        where: { id, userId },
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         data: dataToUpdate,
       });
@@ -71,11 +77,11 @@ export class SubscriptionsService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number, userId: string) {
     try {
       Logger.log(`Deleting subscription with ID ${id}`, 'SubscriptionsService');
       return await this.prisma.subscription.delete({
-        where: { id },
+        where: { id, userId },
       });
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

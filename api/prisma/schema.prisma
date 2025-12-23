@@ -14,6 +14,7 @@ datasource db {
 }
 
 model Subscription {
+  userId        String
   id            Int      @id @default(autoincrement())
   name          String
   pricePerCycle Float
