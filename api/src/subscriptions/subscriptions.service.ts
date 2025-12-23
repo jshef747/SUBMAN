@@ -26,11 +26,16 @@ export class SubscriptionsService {
   }
 
   async findOne(id: number) {
+    Logger.log(`Fetching subscription with ID ${id}`, 'SubscriptionsService');
     const subscription = await this.prisma.subscription.findUnique({
       where: { id },
     });
 
     if (!subscription) {
+      Logger.warn(
+        `Subscription with ID ${id} not found`,
+        'SubscriptionsService',
+      );
       throw new NotFoundException(`Subscription with ID ${id} not found`);
     }
 

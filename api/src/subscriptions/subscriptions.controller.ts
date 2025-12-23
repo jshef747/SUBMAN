@@ -28,11 +28,19 @@ export class SubscriptionsController {
 
   @Get()
   findAll() {
+    Logger.log(
+      'Received request to fetch all subscriptions',
+      'SubscriptionsController',
+    );
     return this.subscriptionsService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
+    Logger.log(
+      `Received request to fetch subscription with ID ${id}`,
+      'SubscriptionsController',
+    );
     return this.subscriptionsService.findOne(id);
   }
 
@@ -41,6 +49,10 @@ export class SubscriptionsController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateSubscriptionDto: UpdateSubscriptionDto,
   ) {
+    Logger.log(
+      `Received request to update subscription with ID ${id}`,
+      'SubscriptionsController',
+    );
     return this.subscriptionsService.update(id, updateSubscriptionDto);
   }
 
