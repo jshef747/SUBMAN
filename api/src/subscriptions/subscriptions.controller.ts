@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  Logger,
+} from '@nestjs/common';
 import { SubscriptionsService } from './subscriptions.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
@@ -9,6 +19,10 @@ export class SubscriptionsController {
 
   @Post()
   create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
+    Logger.log(
+      'Received request to create subscription',
+      'SubscriptionsController',
+    );
     return this.subscriptionsService.create(createSubscriptionDto);
   }
 
@@ -18,17 +32,24 @@ export class SubscriptionsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.subscriptionsService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.subscriptionsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSubscriptionDto: UpdateSubscriptionDto) {
-    return this.subscriptionsService.update(+id, updateSubscriptionDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateSubscriptionDto: UpdateSubscriptionDto,
+  ) {
+    return this.subscriptionsService.update(id, updateSubscriptionDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.subscriptionsService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    Logger.log(
+      `Received request to delete subscription with ID ${id}`,
+      'SubscriptionsController',
+    );
+    return this.subscriptionsService.remove(id);
   }
 }

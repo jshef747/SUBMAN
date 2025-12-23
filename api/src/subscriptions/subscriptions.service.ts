@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { PrismaService } from 'src/prisma.service';
@@ -9,6 +9,7 @@ export class SubscriptionsService {
 
   async create(createSubscriptionDto: CreateSubscriptionDto) {
     const { renewalDate, ...rest } = createSubscriptionDto;
+    Logger.log('Creating new subscription', 'SubscriptionsService');
     return this.prisma.subscription.create({
       data: {
         ...rest,
@@ -18,6 +19,7 @@ export class SubscriptionsService {
   }
 
   async findAll() {
+    Logger.log('Fetching all subscriptions', 'SubscriptionsService');
     return this.prisma.subscription.findMany({
       orderBy: { createdAt: 'desc' },
     });
@@ -31,6 +33,8 @@ export class SubscriptionsService {
     if (!subscription) {
       throw new NotFoundException(`Subscription with ID ${id} not found`);
     }
+
+    return subscription;
   }
 
   async update(id: number, updateSubscriptionDto: UpdateSubscriptionDto) {
@@ -43,6 +47,7 @@ export class SubscriptionsService {
     }
 
     try {
+      Logger.log(`Updating subscription with ID ${id}`, 'SubscriptionsService');
       return await this.prisma.subscription.update({
         where: { id },
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -51,6 +56,10 @@ export class SubscriptionsService {
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (error.code === 'P2025') {
+        Logger.warn(
+          `Subscription with ID ${id} not found`,
+          'SubscriptionsService',
+        );
         throw new NotFoundException(`Subscription with ID ${id} not found`);
       }
       throw error;
@@ -59,12 +68,17 @@ export class SubscriptionsService {
 
   async remove(id: number) {
     try {
+      Logger.log(`Deleting subscription with ID ${id}`, 'SubscriptionsService');
       return await this.prisma.subscription.delete({
         where: { id },
       });
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (error.code === 'P2025') {
+        Logger.warn(
+          `Subscription with ID ${id} not found`,
+          'SubscriptionsService',
+        );
         throw new NotFoundException(`Subscription with ID ${id} not found`);
       }
       throw error;
