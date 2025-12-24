@@ -1,12 +1,12 @@
 input[type=number]::-webkit-outer-spin-button,
 input[type=number]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Firefox */
 input[type=number] {
-  -moz-appearance: textfield;
+    -moz-appearance: textfield;
 }
 
 select.form-input {
@@ -17,7 +17,8 @@ select.form-input {
 
     /* ADD THIS to force the selected text to the center */
     text-align: center;
-    text-align-last: center; /* Vital for Chrome/Safari */
+    text-align-last: center;
+    /* Vital for Chrome/Safari */
 }
 
 
@@ -82,7 +83,7 @@ select.form-input {
 
 .service-cell {
     font-weight: 520;
-} 
+}
 
 
 .status-badge {
@@ -129,7 +130,7 @@ select.form-input {
     color: var(--text-white);
     cursor: pointer;
     transition: color 0.3s ease;
-    margin-right: -2rem;
+    margin-right: -1rem;
 }
 
 .edit-button:hover {

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import './SubscriptionList.css';
 import AddSubscriptionModal from '../addSubscriptionModal/addSubscriptionModal';
 import { MdDelete } from "react-icons/md";
@@ -7,45 +7,25 @@ import { supabase } from '../../../../supabaseClient';
 
 import type { Subscription } from '../../../../types';
 
-const SubscriptionList: React.FC = () => {
+interface SubscriptionListProps {
+    subscriptions: Subscription[];
+    onRefresh: () => void;
+}
+
+const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, onRefresh }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+    // const [subscriptions, setSubscriptions] = useState<Subscription[]>([]); <-- REMOVED
 
     const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null);
 
 
-    const fetchSubscriptions = async() => {
-        const { data: { session }} = await supabase.auth.getSession();
-        if(!session) return;
 
-        try {
-            const response = await fetch('http://localhost:3000/subscriptions', {
-                headers: {
-                    'Authorization': `Bearer ${session.access_token}`
-                }
-            });
-            if(response.ok) {
-                const data = await response.json();
-                const mappedData: Subscription[] = data.map((item: any) => ({
-                    id: item.id,
-                    service: item.name,
-                    price: `$${item.pricePerCycle}`,
-                    payCycle: item.payCycle,
-                    renewalDate: new Date(item.renewalDate).toLocaleDateString('en-GB'),
-                    status: item.isActive ? 'Active' : 'Expired',
-                }));
-                setSubscriptions(mappedData);
-            }
-        } catch (error) {
-            console.error('Error fetching subscriptions:', error);
-        }
-    };
+    // fetchSubscriptions REMOVED (moved to parent)
 
-    React.useEffect(() => {
-        fetchSubscriptions();
-    }, []);
+    // useEffect REMOVED (moved to parent)
+
 
     const handleAddSubscription = async (data: Subscription) => {
         const { data: { session } } = await supabase.auth.getSession();
@@ -75,7 +55,7 @@ const SubscriptionList: React.FC = () => {
             });
 
             if (response.ok) {
-                fetchSubscriptions(); 
+                onRefresh();
                 setIsModalOpen(false);
                 setEditingSubscription(null);
             } else {
@@ -94,7 +74,7 @@ const SubscriptionList: React.FC = () => {
     const handleDeleteSubscription = async (id: number) => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
-        
+
         try {
             const response = await fetch(`http://localhost:3000/subscriptions/${id}`, {
                 method: 'DELETE',
@@ -103,7 +83,7 @@ const SubscriptionList: React.FC = () => {
                 }
             });
             if (response.ok) {
-                setSubscriptions((prevSubs) => prevSubs.filter((sub) => sub.id !== id));
+                onRefresh();
             }
             else {
                 alert("Failed to delete subscription"); //TDOD: need to add a popup for this
@@ -114,8 +94,8 @@ const SubscriptionList: React.FC = () => {
             alert("An error occurred while deleting the subscription");
         }
     }
-    
-    const calculateNextPaymentDate = (payCycle: string, renewalDate: string): string => { 
+
+    const calculateNextPaymentDate = (payCycle: string, renewalDate: string): string => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const [day, month, year] = renewalDate.split('/').map(Number);
@@ -134,17 +114,17 @@ const SubscriptionList: React.FC = () => {
         const y = nextDate.getFullYear();
 
         return `${d}/${m}/${y}`;
-            
+
     }
 
     return (
         <div className='sub-list-card'>
 
             <div className='card-header'>
-            <h3 className='card-title'>Dashboard</h3>
-            <button className='add-subscription-button' onClick={() => setIsModalOpen(true)}>Add Subscription</button>
+                <h3 className='card-title'>Dashboard</h3>
+                <button className='add-subscription-button' onClick={() => setIsModalOpen(true)}>Add Subscription</button>
             </div>
-            
+
             <table className='sub-table'>
                 <thead>
                     <tr>
@@ -164,7 +144,7 @@ const SubscriptionList: React.FC = () => {
                                 <button className='edit-button' onClick={() => handleEditSubscription(sub)}><IoPencil size={19} /></button>
                             </td>
                             <td className='service-cell'>
-                                {}
+                                { }
                                 {sub.service}
                             </td>
                             <td>{sub.price}</td>
@@ -184,12 +164,12 @@ const SubscriptionList: React.FC = () => {
             </table>
 
             <AddSubscriptionModal
-             isOpen={isModalOpen} 
-             onClose={() => setIsModalOpen(false)} 
-             onSave={handleAddSubscription}
-             editSubscription={editingSubscription}
-             key={editingSubscription ? editingSubscription.id : 'add'}
-             />
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSave={handleAddSubscription}
+                editSubscription={editingSubscription}
+                key={editingSubscription ? editingSubscription.id : 'add'}
+            />
         </div>
     )
 }
