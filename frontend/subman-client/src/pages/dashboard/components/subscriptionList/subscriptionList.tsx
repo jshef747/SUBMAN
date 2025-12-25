@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './SubscriptionList.css';
 import AddSubscriptionModal from '../addSubscriptionModal/addSubscriptionModal';
+import ErrorModal from '../errorModal/ErrorModal';
 import { MdDelete } from "react-icons/md";
 import { IoPencil } from "react-icons/io5";
 import { supabase } from '../../../../supabaseClient';
@@ -19,6 +20,9 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, onRe
     // const [subscriptions, setSubscriptions] = useState<Subscription[]>([]); <-- REMOVED
 
     const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null);
+
+    const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
 
 
@@ -59,10 +63,13 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, onRe
                 setIsModalOpen(false);
                 setEditingSubscription(null);
             } else {
-                alert("Failed to save subscription");
+                setErrorMessage("Failed to save subscription");
+                setIsErrorModalOpen(true);
             }
         } catch (error) {
             console.error("Error saving:", error);
+            setErrorMessage("An error occurred while saving the subscription");
+            setIsErrorModalOpen(true);
         }
     }
 
@@ -86,12 +93,13 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, onRe
                 onRefresh();
             }
             else {
-                alert("Failed to delete subscription"); //TDOD: need to add a popup for this
+                setErrorMessage("Failed to delete subscription");
+                setIsErrorModalOpen(true);
             }
         } catch (error) {
-            //TODO: add a popup for this
             console.error("Error deleting subscription:", error);
-            alert("An error occurred while deleting the subscription");
+            setErrorMessage("An error occurred while deleting the subscription");
+            setIsErrorModalOpen(true);
         }
     }
 
@@ -169,6 +177,12 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, onRe
                 onSave={handleAddSubscription}
                 editSubscription={editingSubscription}
                 key={editingSubscription ? editingSubscription.id : 'add'}
+            />
+
+            <ErrorModal
+                isOpen={isErrorModalOpen}
+                onClose={() => setIsErrorModalOpen(false)}
+                message={errorMessage}
             />
         </div>
     )
