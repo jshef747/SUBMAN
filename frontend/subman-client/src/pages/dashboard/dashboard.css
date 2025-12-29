@@ -14,13 +14,23 @@
 }
 
 .dashboard-content {
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 2rem;
 }
 
 .dashboard-grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: 3fr 2fr;
     gap: 2rem;
     margin-top: 2rem;
+    align-items: start;
+}
+
+.dashboard-left {
+    min-width: 0;
+}
+
+.dashboard-right {
+    min-width: 0;
 }
