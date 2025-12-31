@@ -27,3 +27,24 @@
   padding: 5px 10px;
   font-weight: 500;
 }
+
+.logout-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  /* mimic a tag if needed, or keeping it plain */
+}
+
+.logout-btn:hover {
+  text-decoration: underline;
+}
+
+.user-email {
+  color: #555;
+  /* Slightly distinct color for email */
+}

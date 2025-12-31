@@ -10,10 +10,12 @@ import type { Subscription } from '../../../../types';
 
 interface SubscriptionListProps {
     subscriptions: Subscription[];
+    setSubscriptions: React.Dispatch<React.SetStateAction<Subscription[]>>;
     onRefresh: () => void;
+    isLoading: boolean;
 }
 
-const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, onRefresh }) => {
+const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setSubscriptions, onRefresh, isLoading }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -34,6 +36,13 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, onRe
     const handleAddSubscription = async (data: Subscription) => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
+
+        // Optimistic UI Update
+        const tempId = -Date.now();
+        const optimisticSubscription = { ...data, id: tempId };
+        setSubscriptions(prev => [...prev, optimisticSubscription]);
+        setIsModalOpen(false);
+        setEditingSubscription(null);
 
         const [day, month, year] = data.renewalDate.split('/');
         const isoDate = new Date(`${year}-${month}-${day}`).toISOString();
@@ -60,14 +69,16 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, onRe
 
             if (response.ok) {
                 onRefresh();
-                setIsModalOpen(false);
-                setEditingSubscription(null);
             } else {
+                // Revert optimistic update
+                setSubscriptions(prev => prev.filter(sub => sub.id !== tempId));
                 setErrorMessage("Failed to save subscription");
                 setIsErrorModalOpen(true);
             }
         } catch (error) {
             console.error("Error saving:", error);
+            // Revert optimistic update
+            setSubscriptions(prev => prev.filter(sub => sub.id !== tempId));
             setErrorMessage("An error occurred while saving the subscription");
             setIsErrorModalOpen(true);
         }
@@ -82,6 +93,10 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, onRe
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
 
+        // Optimistic UI Update
+        const previousSubscriptions = [...subscriptions];
+        setSubscriptions(prev => prev.filter(sub => sub.id !== id));
+
         try {
             const response = await fetch(`http://localhost:3000/subscriptions/${id}`, {
                 method: 'DELETE',
@@ -93,11 +108,15 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, onRe
                 onRefresh();
             }
             else {
+                // Revert optimistic update
+                setSubscriptions(previousSubscriptions);
                 setErrorMessage("Failed to delete subscription");
                 setIsErrorModalOpen(true);
             }
         } catch (error) {
             console.error("Error deleting subscription:", error);
+            // Revert optimistic update
+            setSubscriptions(previousSubscriptions);
             setErrorMessage("An error occurred while deleting the subscription");
             setIsErrorModalOpen(true);
         }
@@ -146,28 +165,42 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, onRe
                     </tr>
                 </thead>
                 <tbody>
-                    {subscriptions.map((sub) => (
-                        <tr key={sub.id} className='table-row'>
-                            <td>
-                                <button className='edit-button' onClick={() => handleEditSubscription(sub)}><IoPencil size={19} /></button>
-                            </td>
-                            <td className='service-cell'>
-                                { }
-                                {sub.service}
-                            </td>
-                            <td>{sub.price}</td>
-                            <td>{sub.payCycle}</td>
-                            <td className='next-cell'>{calculateNextPaymentDate(sub.payCycle, sub.renewalDate)}</td>
-                            <td>
-                                <span className={`status-badge ${sub.status.toLowerCase()}`}>
-                                    {sub.status}
-                                </span>
-                            </td>
-                            <td>
-                                <button className='delete-button' onClick={() => handleDeleteSubscription(sub.id!)}><MdDelete size={24} /></button>
-                            </td>
-                        </tr>
-                    ))}
+                    {isLoading ? (
+                        Array.from({ length: 5 }).map((_, index) => (
+                            <tr key={`skeleton-${index}`} className='table-row'>
+                                <td><div className='skeleton skeleton-icon'></div></td>
+                                <td><div className='skeleton skeleton-text service-skeleton'></div></td>
+                                <td><div className='skeleton skeleton-text price-skeleton'></div></td>
+                                <td><div className='skeleton skeleton-text cycle-skeleton'></div></td>
+                                <td><div className='skeleton skeleton-text date-skeleton'></div></td>
+                                <td><div className='skeleton skeleton-badge'></div></td>
+                                <td><div className='skeleton skeleton-icon'></div></td>
+                            </tr>
+                        ))
+                    ) : (
+                        subscriptions.map((sub) => (
+                            <tr key={sub.id} className='table-row'>
+                                <td>
+                                    <button className='edit-button' onClick={() => handleEditSubscription(sub)}><IoPencil size={19} /></button>
+                                </td>
+                                <td className='service-cell'>
+                                    { }
+                                    {sub.service}
+                                </td>
+                                <td>{sub.price}</td>
+                                <td>{sub.payCycle}</td>
+                                <td className='next-cell'>{calculateNextPaymentDate(sub.payCycle, sub.renewalDate)}</td>
+                                <td>
+                                    <span className={`status-badge ${sub.status.toLowerCase()}`}>
+                                        {sub.status}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button className='delete-button' onClick={() => handleDeleteSubscription(sub.id!)}><MdDelete size={24} /></button>
+                                </td>
+                            </tr>
+                        ))
+                    )}
                 </tbody>
             </table>
 

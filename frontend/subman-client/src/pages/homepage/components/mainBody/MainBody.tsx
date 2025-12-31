@@ -1,7 +1,10 @@
 import "./MainBody.css";
 import homepageImage from "../../assets/homepage-image-changed.jpg";
+import { useNavigate } from "react-router-dom";
 
 export default function MainBody() {
+  const navigate = useNavigate();
+
   return (
     <div className="main-body-wrapper">
       <div className="main-text-wrapper">
@@ -10,7 +13,7 @@ export default function MainBody() {
           Track and manage all your subscriptions in one place. Never forget a
           payment again
         </p>
-        <button className="get-started">Get Started For Free</button>
+        <button className="get-started" onClick={() => navigate("/login")}>Get Started For Free</button>
       </div>
       <div className="main-image-wrapper">
         <img
