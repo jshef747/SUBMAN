@@ -11,6 +11,7 @@ import type { Subscription } from '../../types';
 
 const dashboard: React.FC = () => {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchSubscriptions = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -36,6 +37,8 @@ const dashboard: React.FC = () => {
       }
     } catch (error) {
       console.error('Error fetching subscriptions:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -49,7 +52,7 @@ const dashboard: React.FC = () => {
 
         <main className="dashboard-grid">
           <div className="dashboard-left">
-            <SubscriptionList subscriptions={subscriptions} onRefresh={fetchSubscriptions} />
+            <SubscriptionList subscriptions={subscriptions} setSubscriptions={setSubscriptions} onRefresh={fetchSubscriptions} isLoading={isLoading} />
           </div>
           <div className="dashboard-right">
             <SpendingGraph subscriptions={subscriptions} />

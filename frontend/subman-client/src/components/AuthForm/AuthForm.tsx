@@ -6,9 +6,10 @@ import "./AuthForm.css";
 interface AuthFormProps {
   type: "login" | "signup";
   onSubmit: (email: string, pass: string) => void;
+  error?: string;
 }
 
-export default function AuthForm({ type, onSubmit }: AuthFormProps) {
+export default function AuthForm({ type, onSubmit, error }: AuthFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -29,7 +30,7 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "http://localhost:5173/",
+        redirectTo: `${window.location.origin}/dashboard`,
       },
     });
     if (error) console.error("Login failed:", error.message);
@@ -89,6 +90,7 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
             </>
           )}
         </p>
+        {error && <div className="form-error-message">{error}</div>}
       </form>
     </div>
   );
