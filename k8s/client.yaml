@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subman-client
+  namespace: subman
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subman-client
+  template:
+    metadata:
+      labels:
+        app: subman-client
+    spec:
+      containers:
+      - name: subman-client
+        image: jsheffer747/subman-client:v1
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: subman-client
+  namespace: subman
+spec:
+  # MetalLB will assign an External IP
+  type: LoadBalancer
+  selector:
+    app: subman-client
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

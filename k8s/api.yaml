@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subman-api
+  namespace: subman
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subman-api
+  template:
+    metadata:
+      labels:
+        app: subman-api
+    spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox
+        command: ['sh', '-c', "until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done"]
+      containers:
+      - name: subman-api
+        image: jsheffer747/subman-api:v1.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        # Health Probes (Ready for Step 4)
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /readinessz
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        # Load all secrets as Env Vars
+        envFrom:
+        - secretRef:
+            name: subman-secrets
+        env:
+        - name: PORT
+          value: "3000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: subman-api
+  namespace: subman
+spec:
+  selector:
+    app: subman-api
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
