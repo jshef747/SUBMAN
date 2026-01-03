@@ -7,6 +7,7 @@ import { IoPencil } from "react-icons/io5";
 import { supabase } from '../../../../supabaseClient';
 
 import type { Subscription } from '../../../../types';
+import { getServiceIcon } from '../../../../utils/serviceIcons';
 
 interface SubscriptionListProps {
     subscriptions: Subscription[];
@@ -184,7 +185,7 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
                                     <button className='edit-button' onClick={() => handleEditSubscription(sub)}><IoPencil size={19} /></button>
                                 </td>
                                 <td className='service-cell'>
-                                    { }
+                                    {getServiceIcon(sub.service)}
                                     {sub.service}
                                 </td>
                                 <td>{sub.price}</td>

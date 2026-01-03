@@ -82,7 +82,11 @@ select.form-input {
 }
 
 .service-cell {
+    margin-top: 1.2rem;
     font-weight: 520;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
 }
 
 
