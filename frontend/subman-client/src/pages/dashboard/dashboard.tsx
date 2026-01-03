@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import './Dashboard.css';
+import './dashboard.css';
 
 import SubscriptionList from "./components/subscriptionList/subscriptionList";
 import SpendingGraph from "./components/spendingGraph/SpendingGraph";
@@ -13,12 +13,14 @@ const dashboard: React.FC = () => {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
   const fetchSubscriptions = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
     try {
-      const response = await fetch('http://localhost:3000/subscriptions', {
+      const response = await fetch(`${apiUrl}/subscriptions`, {
         headers: {
           'Authorization': `Bearer ${session.access_token}`
         }

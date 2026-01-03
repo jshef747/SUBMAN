@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './SubscriptionList.css';
+import './subscriptionList.css';
 import AddSubscriptionModal from '../addSubscriptionModal/addSubscriptionModal';
 import ErrorModal from '../errorModal/ErrorModal';
 import { MdDelete } from "react-icons/md";

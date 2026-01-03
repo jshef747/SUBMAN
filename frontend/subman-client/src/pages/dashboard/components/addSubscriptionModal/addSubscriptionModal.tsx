@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import './AddSubscriptionModal.css'
+import './addSubscriptionModal.css'
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
