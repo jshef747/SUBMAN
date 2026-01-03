@@ -99,7 +99,7 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
         setSubscriptions(prev => prev.filter(sub => sub.id !== id));
 
         try {
-            const response = await fetch(`http://localhost:3000/subscriptions/${id}`, {
+            const response = await fetch(`http://localhost:3001/subscriptions/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${session.access_token}`
