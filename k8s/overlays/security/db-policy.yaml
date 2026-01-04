@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: protect-db
+  namespace: subman
+spec:
+  # 1. THE TARGET: Who is this rule for?
+  # We are applying this rule to any pod with the label 'app: postgres'
+  podSelector:
+    matchLabels:
+      app: postgres
+
+  # 2. THE TYPE: What traffic are we controlling?
+  # 'Ingress' means "Traffic coming INTO the pod"
+  policyTypes:
+  - Ingress
+
+  # 3. THE RULES: Who is allowed in?
+  ingress:
+  - from:
+    # Rule A: Allow traffic ONLY from pods with the label 'app: subman-api'
+    - podSelector:
+        matchLabels:
+          app: subman-api
+    
+    # Rule B: Allow traffic on this specific port (Standard Postgres Port)
+    ports:
+    - protocol: TCP
+      port: 5432

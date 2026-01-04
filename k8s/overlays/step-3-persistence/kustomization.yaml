@@ -3,19 +3,21 @@ kind: Kustomization
 
 resources:
   - ../../base
+  - postgres-statefulset.yaml  # <--- MUST BE HERE, NOT IN PATCHES
+  - backup-cronjob.yaml
 
 patches:
-  # Swap the Deployment for the StatefulSet
-  - path: postgres-statefulset.yaml
-    target:
-      group: apps
-      version: v1
-      kind: Deployment
-      name: postgres
-  
-  # Swap the ClusterIP Service for the Headless Service
+  # 1. Update the Service to be Headless
   - path: postgres-service.yaml
     target:
-      version: v1
       kind: Service
       name: postgres
+
+  # 2. Disable the old Deployment (Scale to 0)
+  - target:
+      kind: Deployment
+      name: postgres
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 0

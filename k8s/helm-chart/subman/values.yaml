@@ -1,0 +1,10 @@
+# These are the variables for your Subman app
+replicaCount: 2
+
+api:
+  image: jsheffer747/subman-api:latest
+  port: 3000
+
+database:
+  storageSize: 1Gi
+  user: user

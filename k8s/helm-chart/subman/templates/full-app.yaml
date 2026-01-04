@@ -1,0 +1,272 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: subman
+spec:
+  clusterIP: None
+  ports:
+    - port: 5432
+      protocol: TCP
+      targetPort: 5432
+  selector:
+    app: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: subman-api
+  namespace: subman
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: subman-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: subman-client
+  namespace: subman
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: subman-client
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: subman
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - env:
+            - name: POSTGRES_USER
+              value: user
+            - name: POSTGRES_PASSWORD
+              value: password
+            - name: POSTGRES_DB
+              value: subman
+          image: postgres:15
+          name: postgres
+          ports:
+            - containerPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subman-api
+  namespace: subman
+spec:
+  replicas: { { .Values.replicaCount } }
+  selector:
+    matchLabels:
+      app: subman-api
+  template:
+    metadata:
+      labels:
+        app: subman-api
+    spec:
+      containers:
+        - env:
+            - name: PORT
+              value: "3000"
+          envFrom:
+            - secretRef:
+                name: subman-secrets
+          image: { { .Values.api.image } }
+          imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          name: subman-api
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /readinessz
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: 500m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+      initContainers:
+        - command:
+            - sh
+            - -c
+            - until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done
+          image: busybox
+          name: wait-for-postgres
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subman-client
+  namespace: subman
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subman-client
+  template:
+    metadata:
+      labels:
+        app: subman-client
+    spec:
+      containers:
+        - image: jsheffer747/subman-client:latest
+          name: subman-client
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 200m
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: postgres
+  name: postgres-stateful
+  namespace: subman
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  serviceName: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - env:
+            - name: POSTGRES_PASSWORD
+              value: local_secure_password
+            - name: POSTGRES_USER
+              value: user
+            - name: POSTGRES_DB
+              value: subman
+          image: postgres:15-alpine
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          name: postgres
+          ports:
+            - containerPort: 5432
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: subman
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - command:
+                - /bin/sh
+                - -c
+                - |
+                  echo "Starting backup..."
+                  PGPASSWORD='local_secure_password' pg_dump -h postgres -U postgres postgres > /tmp/backup_$(date +%Y%m%d).sql
+                  echo "Backup complete: /tmp/backup_$(date +%Y%m%d).sql"
+              image: postgres:15-alpine
+              name: backup
+          restartPolicy: OnFailure
+  schedule: 0 2 * * *
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: subman-api-hpa
+  namespace: subman
+spec:
+  maxReplicas: 5
+  metrics:
+    - resource:
+        name: cpu
+        target:
+          averageUtilization: 50
+          type: Utilization
+      type: Resource
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: subman-api
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: protect-db
+  namespace: subman
+spec:
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: subman-api
+      ports:
+        - port: 5432
+          protocol: TCP
+  podSelector:
+    matchLabels:
+      app: postgres
+  policyTypes:
+    - Ingress

@@ -1,9 +1,10 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres
+  name: postgres-stateful
   namespace: subman
-$patch: replace
+  labels:
+    app: postgres
 spec:
   serviceName: "postgres"
   replicas: 1
@@ -16,26 +17,27 @@ spec:
         app: postgres
     spec:
       containers:
-      - name: postgres
-        image: postgres:15-alpine
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: subman-secrets
-              key: DATABASE_URL 
-              # Note: Ideally this should be just the password key, 
-              # but sticking to your current secret structure.
-        volumeMounts:
-        - name: postgres-data
-          mountPath: /var/lib/postgresql/data
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              value: "local_secure_password"
+            # --- START OF FIX ---
+            - name: POSTGRES_USER
+              value: "user"
+            - name: POSTGRES_DB
+              value: "subman"
+            # --- END OF FIX ---
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
   volumeClaimTemplates:
-  - metadata:
-      name: postgres-data
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 1Gi
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
