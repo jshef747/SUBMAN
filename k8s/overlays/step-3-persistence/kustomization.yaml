@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+patches:
+  # Swap the Deployment for the StatefulSet
+  - path: postgres-statefulset.yaml
+    target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: postgres
+  
+  # Swap the ClusterIP Service for the Headless Service
+  - path: postgres-service.yaml
+    target:
+      version: v1
+      kind: Service
+      name: postgres

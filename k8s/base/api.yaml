@@ -19,7 +19,7 @@ spec:
         command: ['sh', '-c', "until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done"]
       containers:
       - name: subman-api
-        image: jsheffer747/subman-api:v1.1
+        image: jsheffer747/subman-api:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3000

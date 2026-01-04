@@ -39,6 +39,7 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
         if (!session) return;
 
         // Optimistic UI Update
+        const apiUrl = import.meta.env.VITE_API_URL;
         const tempId = -Date.now();
         const optimisticSubscription = { ...data, id: tempId };
         setSubscriptions(prev => [...prev, optimisticSubscription]);
@@ -59,7 +60,7 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
         };
 
         try {
-            const response = await fetch('http://localhost:3000/subscriptions', {
+            const response = await fetch(`${apiUrl}/subscriptions`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -93,13 +94,15 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
     const handleDeleteSubscription = async (id: number) => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
+        const apiUrl = import.meta.env.VITE_API_URL;
+
 
         // Optimistic UI Update
         const previousSubscriptions = [...subscriptions];
         setSubscriptions(prev => prev.filter(sub => sub.id !== id));
 
         try {
-            const response = await fetch(`http://localhost:3001/subscriptions/${id}`, {
+            const response = await fetch(`${apiUrl}/subscriptions/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${session.access_token}`

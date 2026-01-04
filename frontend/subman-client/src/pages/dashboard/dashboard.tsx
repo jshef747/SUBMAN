@@ -13,7 +13,7 @@ const dashboard: React.FC = () => {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const apiUrl = 'http://localhost:3001';
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   const fetchSubscriptions = async () => {
     const { data: { session } } = await supabase.auth.getSession();

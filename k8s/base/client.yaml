@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: subman-client
-        image: jsheffer747/subman-client:v1
+        image: jsheffer747/subman-client:latest
         ports:
         - containerPort: 80
 ---
