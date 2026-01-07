@@ -73,7 +73,7 @@ metadata:
   name: subman-api
   namespace: subman
 spec:
-  replicas: { { .Values.replicaCount } }
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: subman-api
@@ -89,7 +89,7 @@ spec:
           envFrom:
             - secretRef:
                 name: subman-secrets
-          image: { { .Values.api.image } }
+          image: {{ .Values.api.image }}
           imagePullPolicy: Always
           livenessProbe:
             httpGet:
