@@ -5,6 +5,15 @@ api:
   image: jsheffer747/subman-api:latest
   port: 3000
 
+client:
+  image: jsheffer747/subman-client:latest
+  port: 80
+
+postgres:
+  image: postgres:15
+  statefulImage: postgres:15-alpine
+  port: 5432
+
 database:
   storageSize: 1Gi
   user: user

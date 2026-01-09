@@ -88,3 +88,5 @@ typings/
 .dynamodb/
 
 secret.yaml
+
+.DS_Store

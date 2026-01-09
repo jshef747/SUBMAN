@@ -6,9 +6,9 @@ metadata:
 spec:
   clusterIP: None
   ports:
-    - port: 5432
+    - port: {{ .Values.postgres.port }}
       protocol: TCP
-      targetPort: 5432
+      targetPort: {{ .Values.postgres.port }}
   selector:
     app: postgres
 ---
@@ -19,9 +19,9 @@ metadata:
   namespace: subman
 spec:
   ports:
-    - port: 3000
+    - port: {{ .Values.api.port }}
       protocol: TCP
-      targetPort: 3000
+      targetPort: {{ .Values.api.port }}
   selector:
     app: subman-api
 ---
@@ -32,9 +32,9 @@ metadata:
   namespace: subman
 spec:
   ports:
-    - port: 80
+    - port: {{ .Values.client.port }}
       protocol: TCP
-      targetPort: 80
+      targetPort: {{ .Values.client.port }}
   selector:
     app: subman-client
   type: LoadBalancer
@@ -62,10 +62,10 @@ spec:
               value: password
             - name: POSTGRES_DB
               value: subman
-          image: postgres:15
+          image: {{ .Values.postgres.image }}
           name: postgres
           ports:
-            - containerPort: 5432
+            - containerPort: {{ .Values.postgres.port }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -85,7 +85,7 @@ spec:
       containers:
         - env:
             - name: PORT
-              value: "3000"
+              value: "{{ .Values.api.port }}"
           envFrom:
             - secretRef:
                 name: subman-secrets
@@ -94,16 +94,16 @@ spec:
           livenessProbe:
             httpGet:
               path: /healthz
-              port: 3000
+              port: {{ .Values.api.port }}
             initialDelaySeconds: 15
             periodSeconds: 10
           name: subman-api
           ports:
-            - containerPort: 3000
+            - containerPort: {{ .Values.api.port }}
           readinessProbe:
             httpGet:
               path: /readinessz
-              port: 3000
+              port: {{ .Values.api.port }}
             initialDelaySeconds: 5
             periodSeconds: 5
           resources:
@@ -117,7 +117,7 @@ spec:
         - command:
             - sh
             - -c
-            - until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done
+            - until nc -z postgres {{ .Values.postgres.port }}; do echo waiting for postgres; sleep 2; done
           image: busybox
           name: wait-for-postgres
 ---
@@ -137,10 +137,10 @@ spec:
         app: subman-client
     spec:
       containers:
-        - image: jsheffer747/subman-client:latest
+        - image: {{ .Values.client.image }}
           name: subman-client
           ports:
-            - containerPort: 80
+            - containerPort: {{ .Values.client.port }}
           resources:
             limits:
               cpu: 200m
@@ -175,7 +175,7 @@ spec:
               value: user
             - name: POSTGRES_DB
               value: subman
-          image: postgres:15-alpine
+          image: {{ .Values.postgres.statefulImage }}
           livenessProbe:
             exec:
               command:
@@ -186,7 +186,7 @@ spec:
             periodSeconds: 10
           name: postgres
           ports:
-            - containerPort: 5432
+            - containerPort: {{ .Values.postgres.port }}
           readinessProbe:
             exec:
               command:
@@ -226,7 +226,7 @@ spec:
                   echo "Starting backup..."
                   PGPASSWORD='local_secure_password' pg_dump -h postgres -U postgres postgres > /tmp/backup_$(date +%Y%m%d).sql
                   echo "Backup complete: /tmp/backup_$(date +%Y%m%d).sql"
-              image: postgres:15-alpine
+              image: {{ .Values.postgres.statefulImage }}
               name: backup
           restartPolicy: OnFailure
   schedule: 0 2 * * *
@@ -263,7 +263,7 @@ spec:
             matchLabels:
               app: subman-api
       ports:
-        - port: 5432
+        - port: {{ .Values.postgres.port }}
           protocol: TCP
   podSelector:
     matchLabels:
