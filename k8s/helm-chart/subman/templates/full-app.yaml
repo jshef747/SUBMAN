@@ -1,198 +1,191 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: {{ .Release.Name }}-{{ .Values.postgres.name }}
   namespace: subman
 spec:
   clusterIP: None
   ports:
-    - port: {{ .Values.postgres.port }}
+    - port: {{ .Values.postgres.service.port }}
       protocol: TCP
-      targetPort: {{ .Values.postgres.port }}
+      targetPort: {{ .Values.postgres.service.port }}
   selector:
-    app: postgres
+    app: {{ .Release.Name }}-{{ .Values.postgres.name }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: subman-api
+  name: {{ .Release.Name }}-{{ .Values.api.name }}
   namespace: subman
 spec:
   ports:
-    - port: {{ .Values.api.port }}
+    - port: {{ .Values.api.service.port }}
       protocol: TCP
-      targetPort: {{ .Values.api.port }}
+      targetPort: {{ .Values.api.service.port }}
   selector:
-    app: subman-api
+    app: {{ .Release.Name }}-{{ .Values.api.name }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: subman-client
+  name: {{ .Release.Name }}-{{ .Values.client.name }}
   namespace: subman
 spec:
   ports:
-    - port: {{ .Values.client.port }}
+    - port: {{ .Values.client.service.port }}
       protocol: TCP
-      targetPort: {{ .Values.client.port }}
+      targetPort: {{ .Values.client.service.port }}
   selector:
-    app: subman-client
-  type: LoadBalancer
+    app: {{ .Release.Name }}-{{ .Values.client.name }}
+  type: {{ .Values.client.service.type }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres
+  name: {{ .Release.Name }}-{{ .Values.postgres.name }}
   namespace: subman
 spec:
   replicas: 0
   selector:
     matchLabels:
-      app: postgres
+      app: {{ .Release.Name }}-{{ .Values.postgres.name }}
   template:
     metadata:
       labels:
-        app: postgres
+        app: {{ .Release.Name }}-{{ .Values.postgres.name }}
     spec:
       containers:
         - env:
             - name: POSTGRES_USER
-              value: user
+              value: {{ .Values.database.user }}
             - name: POSTGRES_PASSWORD
               value: password
             - name: POSTGRES_DB
               value: subman
-          image: {{ .Values.postgres.image }}
+          image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
+          imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
           name: postgres
           ports:
-            - containerPort: {{ .Values.postgres.port }}
+            - containerPort: {{ .Values.postgres.service.port }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: subman-api
+  name: {{ .Release.Name }}-{{ .Values.api.name }}
   namespace: subman
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.api.replicaCount }}
   selector:
     matchLabels:
-      app: subman-api
+      app: {{ .Release.Name }}-{{ .Values.api.name }}
   template:
     metadata:
       labels:
-        app: subman-api
+        app: {{ .Release.Name }}-{{ .Values.api.name }}
     spec:
       containers:
         - env:
             - name: PORT
-              value: "{{ .Values.api.port }}"
+              value: {{ .Values.api.service.port | quote }}
           envFrom:
             - secretRef:
                 name: subman-secrets
-          image: {{ .Values.api.image }}
-          imagePullPolicy: Always
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
           livenessProbe:
             httpGet:
               path: /healthz
-              port: {{ .Values.api.port }}
+              port: {{ .Values.api.service.port }}
             initialDelaySeconds: 15
             periodSeconds: 10
           name: subman-api
           ports:
-            - containerPort: {{ .Values.api.port }}
+            - containerPort: {{ .Values.api.service.port }}
           readinessProbe:
             httpGet:
               path: /readinessz
-              port: {{ .Values.api.port }}
+              port: {{ .Values.api.service.port }}
             initialDelaySeconds: 5
             periodSeconds: 5
           resources:
-            limits:
-              cpu: 500m
-              memory: 256Mi
-            requests:
-              cpu: 100m
-              memory: 128Mi
+            {{- toYaml .Values.api.resources | nindent 12 }}
       initContainers:
         - command:
             - sh
             - -c
-            - until nc -z postgres {{ .Values.postgres.port }}; do echo waiting for postgres; sleep 2; done
+            - until nc -z {{ .Release.Name }}-{{ .Values.postgres.name }} {{ .Values.postgres.service.port }}; do echo waiting for postgres; sleep 2; done
           image: busybox
           name: wait-for-postgres
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: subman-client
+  name: {{ .Release.Name }}-{{ .Values.client.name }}
   namespace: subman
 spec:
-  replicas: 1
+  replicas: {{ .Values.client.replicaCount }}
   selector:
     matchLabels:
-      app: subman-client
+      app: {{ .Release.Name }}-{{ .Values.client.name }}
   template:
     metadata:
       labels:
-        app: subman-client
+        app: {{ .Release.Name }}-{{ .Values.client.name }}
     spec:
       containers:
-        - image: {{ .Values.client.image }}
+        - image: "{{ .Values.client.image.repository }}:{{ .Values.client.image.tag }}"
+          imagePullPolicy: {{ .Values.client.image.pullPolicy }}
           name: subman-client
           ports:
-            - containerPort: {{ .Values.client.port }}
+            - containerPort: {{ .Values.client.service.port }}
           resources:
-            limits:
-              cpu: 200m
-              memory: 128Mi
-            requests:
-              cpu: 50m
-              memory: 64Mi
+            {{- toYaml .Values.client.resources | nindent 12 }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   labels:
-    app: postgres
-  name: postgres-stateful
+    app: {{ .Release.Name }}-{{ .Values.postgres.name }}
+  name: {{ .Release.Name }}-{{ .Values.postgres.name }}-stateful
   namespace: subman
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: postgres
-  serviceName: postgres
+      app: {{ .Release.Name }}-{{ .Values.postgres.name }}
+  serviceName: {{ .Release.Name }}-{{ .Values.postgres.name }}
   template:
     metadata:
       labels:
-        app: postgres
+        app: {{ .Release.Name }}-{{ .Values.postgres.name }}
     spec:
       containers:
         - env:
             - name: POSTGRES_PASSWORD
               value: local_secure_password
             - name: POSTGRES_USER
-              value: user
+              value: {{ .Values.database.user }}
             - name: POSTGRES_DB
               value: subman
-          image: {{ .Values.postgres.statefulImage }}
+          image: "{{ .Values.postgres.statefulImage.repository }}:{{ .Values.postgres.statefulImage.tag }}"
+          imagePullPolicy: {{ .Values.postgres.statefulImage.pullPolicy }}
           livenessProbe:
             exec:
               command:
                 - pg_isready
                 - -U
-                - postgres
+                - {{ .Values.database.user }}
             initialDelaySeconds: 30
             periodSeconds: 10
           name: postgres
           ports:
-            - containerPort: {{ .Values.postgres.port }}
+            - containerPort: {{ .Values.postgres.service.port }}
           readinessProbe:
             exec:
               command:
                 - pg_isready
                 - -U
-                - postgres
+                - {{ .Values.database.user }}
             initialDelaySeconds: 5
             periodSeconds: 5
           volumeMounts:
@@ -206,12 +199,12 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: 1Gi
+            storage: {{ .Values.database.storageSize }}
 ---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: postgres-backup
+  name: {{ .Release.Name }}-postgres-backup
   namespace: subman
 spec:
   jobTemplate:
@@ -224,49 +217,51 @@ spec:
                 - -c
                 - |
                   echo "Starting backup..."
-                  PGPASSWORD='local_secure_password' pg_dump -h postgres -U postgres postgres > /tmp/backup_$(date +%Y%m%d).sql
+                  PGPASSWORD='local_secure_password' pg_dump -h {{ .Release.Name }}-{{ .Values.postgres.name }} -U {{ .Values.database.user }} subman > /tmp/backup_$(date +%Y%m%d).sql
                   echo "Backup complete: /tmp/backup_$(date +%Y%m%d).sql"
-              image: {{ .Values.postgres.statefulImage }}
+              image: "{{ .Values.postgres.statefulImage.repository }}:{{ .Values.postgres.statefulImage.tag }}"
               name: backup
           restartPolicy: OnFailure
   schedule: 0 2 * * *
 ---
+{{- if .Values.api.autoscaling.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: subman-api-hpa
+  name: {{ .Release.Name }}-{{ .Values.api.name }}-hpa
   namespace: subman
 spec:
-  maxReplicas: 5
+  maxReplicas: {{ .Values.api.autoscaling.maxReplicas }}
   metrics:
     - resource:
         name: cpu
         target:
-          averageUtilization: 50
+          averageUtilization: {{ .Values.api.autoscaling.targetCPUUtilizationPercentage }}
           type: Utilization
       type: Resource
-  minReplicas: 1
+  minReplicas: {{ .Values.api.autoscaling.minReplicas }}
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: subman-api
+    name: {{ .Release.Name }}-{{ .Values.api.name }}
+{{- end }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: protect-db
+  name: {{ .Release.Name }}-protect-db
   namespace: subman
 spec:
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              app: subman-api
+              app: {{ .Release.Name }}-{{ .Values.api.name }}
       ports:
-        - port: {{ .Values.postgres.port }}
+        - port: {{ .Values.postgres.service.port }}
           protocol: TCP
   podSelector:
     matchLabels:
-      app: postgres
+      app: {{ .Release.Name }}-{{ .Values.postgres.name }}
   policyTypes:
     - Ingress

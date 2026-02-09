@@ -1,18 +1,61 @@
-# These are the variables for your Subman app
-replicaCount: 2
+# Global settings
+nameOverride: ""
+fullnameOverride: ""
 
 api:
-  image: jsheffer747/subman-api:latest
-  port: 3000
+  name: api
+  replicaCount: 2
+  image:
+    repository: jsheffer747/subman-api
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 3000
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 50
 
 client:
-  image: jsheffer747/subman-client:latest
-  port: 80
+  name: client
+  replicaCount: 1
+  image:
+    repository: jsheffer747/subman-client
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: LoadBalancer
+    port: 80
+  resources:
+    limits:
+      cpu: 200m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
 
 postgres:
-  image: postgres:15
-  statefulImage: postgres:15-alpine
-  port: 5432
+  name: postgres
+  image:
+    repository: postgres
+    tag: "15"
+    pullPolicy: IfNotPresent
+  statefulImage:
+    repository: postgres
+    tag: "15-alpine"
+    pullPolicy: IfNotPresent
+  service:
+    port: 5432
+  resources: {} # No default resources currently set in template
 
 database:
   storageSize: 1Gi
