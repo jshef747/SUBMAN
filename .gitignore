@@ -90,3 +90,5 @@ typings/
 secret.yaml
 
 .DS_Store
+
+values.yaml
