@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subman-api
+  namespace: subman
+  labels:
+    app: subman-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subman-api
+  template:
+    metadata:
+      labels:
+        app: subman-api
+    spec:
+      # --- InitContainer: Runs Migrations ---
+      initContainers:
+        - name: db-migration
+          image: jsheffer747/subman-api:0.0.1 # <--- CHANGE THIS
+          command: ["npx", "prisma", "migrate", "deploy"]
+          envFrom:
+            - configMapRef:
+                name: subman-config
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: subman-secrets
+                  key: DATABASE_URL
+
+      # --- Main Container: The Application ---
+      containers:
+        - name: subman-api
+          image: jsheffer747/subman-api:0.0.1 # <--- CHANGE THIS
+          ports:
+            - containerPort: 3000
+
+          # Load all configs and secrets
+          envFrom:
+            - configMapRef:
+                name: subman-config
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: subman-secrets
+                  key: DATABASE_URL
+            - name: SUPABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: subman-secrets
+                  key: SUPABASE_URL
+            - name: SUPABASE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: subman-secrets
+                  key: SUPABASE_KEY
+
+          # --- Probes (Course Requirement) ---
+          # Checks if the container is alive (restarts if fails)
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          # Checks if the container is ready to receive traffic
+          readinessProbe:
+            httpGet:
+              path: /readinessz
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10

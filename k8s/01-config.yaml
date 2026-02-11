@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: subman-config
+  namespace: subman
+data:
+  # The Node environment
+  NODE_ENV: "production"
+  # The port the API runs on (matches your Dockerfile)
+  PORT: "3000"
+  # Postgres database name (not the password!)
+  POSTGRES_DB: "subman_db"
+  POSTGRES_USER: "subman_user"
+  # The service hostname for the database (we will create this in Step 3)
+  DB_HOST: "postgres-headless"

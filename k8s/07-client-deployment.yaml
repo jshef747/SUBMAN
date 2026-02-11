@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subman-client
+  namespace: subman
+  labels:
+    app: subman-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subman-client
+  template:
+    metadata:
+      labels:
+        app: subman-client
+    spec:
+      containers:
+        - name: subman-client
+          image: jsheffer747/subman-client:0.0.1 # <--- CHANGE THIS
+          ports:
+            - containerPort: 80
+          # Liveness probe for Nginx
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 20
