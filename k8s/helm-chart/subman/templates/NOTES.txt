@@ -6,21 +6,15 @@ Thank you for installing Subman!
 
 The frontend is exposed via a LoadBalancer service.
 
-Get the external IP or port:
-
+Get the external IP:
   kubectl get svc subman-client -n {{ .Release.Namespace }}
 
-Then open: http://<EXTERNAL-IP>
-
-If running locally with Minikube:
-
+Open in Minikube:
   minikube service subman-client -n {{ .Release.Namespace }}
 
-If running locally with Docker Desktop or kind, use port-forwarding:
-
+Port-forward (Docker Desktop / kind):
   kubectl port-forward svc/subman-client 8080:80 -n {{ .Release.Namespace }}
-
-Then open: http://localhost:8080
+  Then open: http://localhost:8080
 
 ========================================================================
    USAGE
@@ -39,3 +33,36 @@ Wait for all three pods to show 1/1 Running:
   - postgres-0
   - subman-api-xxx
   - subman-client-xxx
+
+The API pod runs two init containers before starting:
+  1. wait-for-postgres  -- waits until the database is ready
+  2. db-migration       -- runs prisma migrate deploy
+
+========================================================================
+   CONFIGURATION & DEFAULT VALUES
+========================================================================
+
+Default DB password : {{ .Values.postgres.dbPassword }}
+Default DB user     : {{ .Values.postgres.dbUser }}
+Default DB name     : {{ .Values.postgres.dbName }}
+
+Override the DB password:
+  helm upgrade --install subman oci://registry-1.docker.io/jsheffer747/subman --version 0.1.0 --set postgres.dbPassword=MyNewPassword
+
+Override multiple values:
+  helm upgrade --install subman oci://registry-1.docker.io/jsheffer747/subman --version 0.1.0 --set postgres.dbPassword=MyNewPassword --set postgres.dbUser=myuser --set postgres.dbName=mydb
+
+Use a custom values file:
+  helm upgrade --install subman oci://registry-1.docker.io/jsheffer747/subman --version 0.1.0 -f my-values.yaml
+
+========================================================================
+   UNINSTALL
+========================================================================
+
+Remove the deployment:
+  helm uninstall subman -n {{ .Release.Namespace }}
+
+Remove the deployment AND all database data:
+  helm uninstall subman -n {{ .Release.Namespace }} && kubectl delete pvc -l app=postgres -n {{ .Release.Namespace }}
+
+NOTE: Reinstalling without deleting the PVC will reuse existing data.
