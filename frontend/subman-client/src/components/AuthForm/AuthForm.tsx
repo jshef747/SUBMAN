@@ -1,6 +1,6 @@
 import type React from "react";
 import { useState } from "react";
-import { supabase } from "../../supabaseClient";
+// import { supabase } from "../../supabaseClient";
 import "./AuthForm.css";
 
 interface AuthFormProps {
@@ -26,15 +26,17 @@ export default function AuthForm({ type, onSubmit, error }: AuthFormProps) {
     onSubmit(email, password);
   };
 
-  const handleGoogleAuth = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
-    });
-    if (error) console.error("Login failed:", error.message);
-  };
+  /*
+    const handleGoogleAuth = async () => {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+      if (error) console.error("Login failed:", error.message);
+    };
+  */
 
   return (
     <div className="auth-container">
@@ -71,13 +73,6 @@ export default function AuthForm({ type, onSubmit, error }: AuthFormProps) {
 
         <button type="submit" className="auth-button">
           {isSignup ? "Sign Up" : "Log In"}
-        </button>
-        <button type="button" className="google-btn" onClick={handleGoogleAuth}>
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
-            alt="Google logo"
-          />
-          {isSignup ? "Sign up with Google" : "Sign in with Google"}
         </button>
         <p className="auth-footer">
           {type === "signup" ? (

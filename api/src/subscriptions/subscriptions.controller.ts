@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Controller,
   Get,
@@ -10,71 +8,62 @@ import {
   Delete,
   ParseIntPipe,
   Logger,
-  UseGuards,
-  Request,
-  Req,
 } from '@nestjs/common';
 import { SubscriptionsService } from './subscriptions.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
-import { SupabaseGuard } from 'src/auth/supabase.guard';
+
+const DEMO_USER_ID = 'demo-user';
 
 @Controller('subscriptions')
-@UseGuards(SupabaseGuard)
 export class SubscriptionsController {
   constructor(private readonly subscriptionsService: SubscriptionsService) {}
 
   @Post()
-  create(@Body() createSubscriptionDto: CreateSubscriptionDto, @Request() req) {
+  create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
     Logger.log(
       'Received request to create subscription',
       'SubscriptionsController',
     );
-    const userId = req.user.id;
-    return this.subscriptionsService.create(createSubscriptionDto, userId);
+    return this.subscriptionsService.create(createSubscriptionDto, DEMO_USER_ID);
   }
 
   @Get()
-  findAll(@Request() req) {
+  findAll() {
     Logger.log(
       'Received request to fetch all subscriptions',
       'SubscriptionsController',
     );
-    const userId: string = req.user.id;
-    return this.subscriptionsService.findAll(userId);
+    return this.subscriptionsService.findAll(DEMO_USER_ID);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number, @Request() req) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     Logger.log(
       `Received request to fetch subscription with ID ${id}`,
       'SubscriptionsController',
     );
-    const userId: string = req.user.id;
-    return this.subscriptionsService.findOne(id, userId);
+    return this.subscriptionsService.findOne(id, DEMO_USER_ID);
   }
 
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateSubscriptionDto: UpdateSubscriptionDto,
-    @Request() req,
   ) {
     Logger.log(
       `Received request to update subscription with ID ${id}`,
       'SubscriptionsController',
     );
-    const userId: string = req.user.id;
-    return this.subscriptionsService.update(id, updateSubscriptionDto, userId);
+    return this.subscriptionsService.update(id, updateSubscriptionDto, DEMO_USER_ID);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number, @Request() req) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     Logger.log(
       `Received request to delete subscription with ID ${id}`,
       'SubscriptionsController',
     );
-    const userId: string = req.user.id;
-    return this.subscriptionsService.remove(id, userId);
+    return this.subscriptionsService.remove(id, DEMO_USER_ID);
   }
 }

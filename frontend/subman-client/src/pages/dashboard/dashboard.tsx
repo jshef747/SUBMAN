@@ -3,10 +3,7 @@ import './dashboard.css';
 
 import SubscriptionList from "./components/subscriptionList/subscriptionList";
 import SpendingGraph from "./components/spendingGraph/SpendingGraph";
-import { supabase } from '../../supabaseClient';
 import type { Subscription } from '../../types';
-
-
 
 
 const dashboard: React.FC = () => {
@@ -16,15 +13,8 @@ const dashboard: React.FC = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const fetchSubscriptions = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
-
     try {
-      const response = await fetch(`${apiUrl}/subscriptions`, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`
-        }
-      });
+      const response = await fetch(`${apiUrl}/subscriptions`);
       if (response.ok) {
         const data = await response.json();
         const mappedData: Subscription[] = data.map((item: any) => ({

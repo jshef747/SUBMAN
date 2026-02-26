@@ -1,0 +1,38 @@
+Thank you for installing Subman!
+
+========================================================================
+   1. ACCESSING THE APPLICATION
+========================================================================
+The frontend is exposed via a LoadBalancer. Run the following command 
+to get the External IP:
+
+kubectl get svc subman-client -n {{ .Release.Namespace }}
+
+Once the EXTERNAL-IP is assigned, visit: http://<EXTERNAL-IP>
+
+(Note: If running locally without a LoadBalancer, use port-forwarding):
+kubectl port-forward svc/subman-client 8080:80 -n {{ .Release.Namespace }}
+
+========================================================================
+   2. INSTALLATION COMMAND
+========================================================================
+To deploy the full stack with the verified credentials, run:
+
+helm upgrade --install subman ./subman-0.1.0.tgz --namespace {{ .Release.Namespace }} --create-namespace \
+  --set postgres.dbPassword="YourPassword123" \
+  --set secret.supabaseUrl="aHR0cHM6Ly96ZmNnbmZma29hbm10cnRsdnBoaS5zdXBhYmFzZS5jbw==" \
+  --set secret.supabaseKey="ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKemRYQmhZbUZ6WlNJc0luSmxaaUk2SW5wbVkyZHVabVpyYjJGdWJYUnlkR3gyY0docElpd2ljbTlzWlNJNkltRnViMjRpTENKcFlYUWlPakUzTmpZME1UTXhNREVzSW1WNGNDSTZNakE0TVRrNE9URXdNWDAuZ2FaTlRYbS1QVTc0VTU3c1ZKMFM2TmpnZG5iNEdyVzE2dWZXa3Z4QXFMWQ==" \
+  --set secret.supabaseServiceRoleKey="ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKemRYQmhZbUZ6WlNJc0luSmxaaUk2SW5wbVkyZHVabVpyYjJGdWJYUnlkR3gyY0docElpd2ljbTlzWlNJNkluTmxjblpwWTJWZmNtOXNaU0lzSW1saGRDSTZNVGMyTmpReE16RXdNU3dpWlhod0lqb3lNRGd4T1RnNU1UQXhmUS5RMFpfX1dNTmU1MmlRZEVxVFhQRzN5RnJnNWZNTkNEck1LajhzUTZRX3Aw" \
+  --set secret.smtpHost="c210cC5nbWFpbC5jb20=" \
+  --set secret.smtpPort="NTg3" \
+  --set secret.smtpUser="ai5zaGVmZmVyNzQ3QGdtYWlsLmNvbQ==" \
+  --set secret.smtpPassword="dmFjZGlkcXZlb3huampieg==" \
+  --set secret.smtpFrom="U3VibWFuIChqLnNoZWZmZXI3NDdAZ21haWwuY29tKQ=="
+
+========================================================================
+   3. ARCHITECTURE NOTES
+========================================================================
+- Database: StatefulSet with PersistentVolumeClaim.
+- Backend: NestJS with an InitContainer for Prisma Migrations.
+- Frontend: React behind Nginx acting as a Reverse Proxy to the API.
+- Configuration: Hybrid Secret strategy (stringData for DB, data for Base64).

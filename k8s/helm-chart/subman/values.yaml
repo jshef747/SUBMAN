@@ -1,0 +1,34 @@
+# Default values for subman.
+
+# --- Backend (API) ---
+api:
+  replicaCount: 1
+  image:
+    repository: jsheffer747/subman-api
+    tag: "latest"
+    pullPolicy: Always
+  service:
+    type: LoadBalancer
+    port: 3000
+
+# --- Frontend (Client) ---
+client:
+  replicaCount: 1
+  image:
+    repository: jsheffer747/subman-client
+    tag: "latest"
+    pullPolicy: Always
+  service:
+    type: LoadBalancer
+    port: 80
+
+# --- Database (Postgres) ---
+postgres:
+  storageSize: 1Gi
+  dbName: subman_db
+  dbUser: subman_user
+  dbPassword: "DefaultPassword123!" # Change this in production!
+
+# --- Global Configs ---
+config:
+  nodeEnv: production

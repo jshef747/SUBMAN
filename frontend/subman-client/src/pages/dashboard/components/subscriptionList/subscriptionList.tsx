@@ -4,7 +4,6 @@ import AddSubscriptionModal from '../addSubscriptionModal/addSubscriptionModal';
 import ErrorModal from '../errorModal/ErrorModal';
 import { MdDelete } from "react-icons/md";
 import { IoPencil } from "react-icons/io5";
-import { supabase } from '../../../../supabaseClient';
 
 import type { Subscription } from '../../../../types';
 import { getServiceIcon } from '../../../../utils/serviceIcons';
@@ -19,26 +18,11 @@ interface SubscriptionListProps {
 const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setSubscriptions, onRefresh, isLoading }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-    // const [subscriptions, setSubscriptions] = useState<Subscription[]>([]); <-- REMOVED
-
     const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null);
-
     const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
-
-
-    // fetchSubscriptions REMOVED (moved to parent)
-
-    // useEffect REMOVED (moved to parent)
-
-
     const handleAddSubscription = async (data: Subscription) => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-
-        // Optimistic UI Update
         const apiUrl = import.meta.env.VITE_API_URL;
         const tempId = -Date.now();
         const optimisticSubscription = { ...data, id: tempId };
@@ -64,7 +48,6 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session.access_token}`
                 },
                 body: JSON.stringify(payload)
             });
@@ -72,14 +55,12 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
             if (response.ok) {
                 onRefresh();
             } else {
-                // Revert optimistic update
                 setSubscriptions(prev => prev.filter(sub => sub.id !== tempId));
                 setErrorMessage("Failed to save subscription");
                 setIsErrorModalOpen(true);
             }
         } catch (error) {
             console.error("Error saving:", error);
-            // Revert optimistic update
             setSubscriptions(prev => prev.filter(sub => sub.id !== tempId));
             setErrorMessage("An error occurred while saving the subscription");
             setIsErrorModalOpen(true);
@@ -92,34 +73,25 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
     }
 
     const handleDeleteSubscription = async (id: number) => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
         const apiUrl = import.meta.env.VITE_API_URL;
 
-
-        // Optimistic UI Update
         const previousSubscriptions = [...subscriptions];
         setSubscriptions(prev => prev.filter(sub => sub.id !== id));
 
         try {
             const response = await fetch(`${apiUrl}/subscriptions/${id}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${session.access_token}`
-                }
             });
             if (response.ok) {
                 onRefresh();
             }
             else {
-                // Revert optimistic update
                 setSubscriptions(previousSubscriptions);
                 setErrorMessage("Failed to delete subscription");
                 setIsErrorModalOpen(true);
             }
         } catch (error) {
             console.error("Error deleting subscription:", error);
-            // Revert optimistic update
             setSubscriptions(previousSubscriptions);
             setErrorMessage("An error occurred while deleting the subscription");
             setIsErrorModalOpen(true);

@@ -1,0 +1,41 @@
+Thank you for installing Subman!
+
+========================================================================
+   ACCESSING THE APPLICATION
+========================================================================
+
+The frontend is exposed via a LoadBalancer service.
+
+Get the external IP or port:
+
+  kubectl get svc subman-client -n {{ .Release.Namespace }}
+
+Then open: http://<EXTERNAL-IP>
+
+If running locally with Minikube:
+
+  minikube service subman-client -n {{ .Release.Namespace }}
+
+If running locally with Docker Desktop or kind, use port-forwarding:
+
+  kubectl port-forward svc/subman-client 8080:80 -n {{ .Release.Namespace }}
+
+Then open: http://localhost:8080
+
+========================================================================
+   USAGE
+========================================================================
+
+No credentials needed. Click Login or Sign Up with any email/password
+and you will land on the dashboard immediately.
+
+========================================================================
+   CHECKING POD STATUS
+========================================================================
+
+  kubectl get pods -n {{ .Release.Namespace }}
+
+Wait for all three pods to show 1/1 Running:
+  - postgres-0
+  - subman-api-xxx
+  - subman-client-xxx

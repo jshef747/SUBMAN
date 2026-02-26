@@ -87,8 +87,6 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
-secret.yaml
-
 .DS_Store
 
-values.yaml
+helm_install.txt
