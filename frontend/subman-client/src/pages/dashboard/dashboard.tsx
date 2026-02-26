@@ -5,12 +5,11 @@ import SubscriptionList from "./components/subscriptionList/subscriptionList";
 import SpendingGraph from "./components/spendingGraph/SpendingGraph";
 import type { Subscription } from '../../types';
 
-
 const dashboard: React.FC = () => {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrl = 'http://localhost:3000';
 
   const fetchSubscriptions = async () => {
     try {
@@ -41,7 +40,6 @@ const dashboard: React.FC = () => {
   return (
     <div className="dashboard-wrapper">
       <div className="dashboard-content">
-
         <main className="dashboard-grid">
           <div className="dashboard-left">
             <SubscriptionList subscriptions={subscriptions} setSubscriptions={setSubscriptions} onRefresh={fetchSubscriptions} isLoading={isLoading} />
@@ -50,11 +48,9 @@ const dashboard: React.FC = () => {
             <SpendingGraph subscriptions={subscriptions} />
           </div>
         </main>
-
       </div>
     </div>
   )
 }
 
-
-export default dashboard
+export default dashboard;

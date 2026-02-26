@@ -4,7 +4,7 @@
 api:
   replicaCount: 1
   image:
-    repository: jsheffer747/subman-api
+    repository: idanyossi/subman-api
     tag: "latest"
     pullPolicy: Always
   service:
@@ -15,7 +15,7 @@ api:
 client:
   replicaCount: 1
   image:
-    repository: jsheffer747/subman-client
+    repository: idanyossi/subman-client
     tag: "latest"
     pullPolicy: Always
   service:

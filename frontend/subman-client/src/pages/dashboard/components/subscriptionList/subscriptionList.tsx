@@ -23,7 +23,7 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleAddSubscription = async (data: Subscription) => {
-        const apiUrl = import.meta.env.VITE_API_URL;
+        const apiUrl = 'http://localhost:3000';
         const tempId = -Date.now();
         const optimisticSubscription = { ...data, id: tempId };
         setSubscriptions(prev => [...prev, optimisticSubscription]);
@@ -60,7 +60,6 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
                 setIsErrorModalOpen(true);
             }
         } catch (error) {
-            console.error("Error saving:", error);
             setSubscriptions(prev => prev.filter(sub => sub.id !== tempId));
             setErrorMessage("An error occurred while saving the subscription");
             setIsErrorModalOpen(true);
@@ -73,7 +72,7 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
     }
 
     const handleDeleteSubscription = async (id: number) => {
-        const apiUrl = import.meta.env.VITE_API_URL;
+        const apiUrl = 'http://localhost:3000';
 
         const previousSubscriptions = [...subscriptions];
         setSubscriptions(prev => prev.filter(sub => sub.id !== id));
@@ -91,7 +90,6 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
                 setIsErrorModalOpen(true);
             }
         } catch (error) {
-            console.error("Error deleting subscription:", error);
             setSubscriptions(previousSubscriptions);
             setErrorMessage("An error occurred while deleting the subscription");
             setIsErrorModalOpen(true);
@@ -117,17 +115,14 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
         const y = nextDate.getFullYear();
 
         return `${d}/${m}/${y}`;
-
     }
 
     return (
         <div className='sub-list-card'>
-
             <div className='card-header'>
                 <h3 className='card-title'>Dashboard</h3>
                 <button className='add-subscription-button' onClick={() => setIsModalOpen(true)}>Add Subscription</button>
             </div>
-
             <table className='sub-table'>
                 <thead>
                     <tr>
@@ -179,7 +174,6 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
                     )}
                 </tbody>
             </table>
-
             <AddSubscriptionModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
@@ -187,7 +181,6 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
                 editSubscription={editingSubscription}
                 key={editingSubscription ? editingSubscription.id : 'add'}
             />
-
             <ErrorModal
                 isOpen={isErrorModalOpen}
                 onClose={() => setIsErrorModalOpen(false)}
