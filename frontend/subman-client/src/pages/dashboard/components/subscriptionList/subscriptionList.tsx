@@ -23,7 +23,7 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleAddSubscription = async (data: Subscription) => {
-        const apiUrl = 'http://localhost:3000';
+        const apiUrl = '/api';
         const tempId = -Date.now();
         const optimisticSubscription = { ...data, id: tempId };
         setSubscriptions(prev => [...prev, optimisticSubscription]);

@@ -9,7 +9,7 @@ const dashboard: React.FC = () => {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const apiUrl = 'http://localhost:3000';
+  const apiUrl = '/api';
 
   const fetchSubscriptions = async () => {
     try {

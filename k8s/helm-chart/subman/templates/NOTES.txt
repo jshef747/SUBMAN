@@ -1,68 +1,41 @@
-Thank you for installing Subman!
+=============================================================================
+SUBMAN KUBERNETES DEPLOYMENT - SUBMISSION NOTES
+=============================================================================
+Project: Subman (Subscription Manager)
+Authors: Idan Yossifov 325013720
+Registry: Docker Hub (OCI)
+Version: 0.1.1 
 
-========================================================================
-   ACCESSING THE APPLICATION
-========================================================================
+-----------------------------------------------------------------------------
+1. INSTALLATION & DEPLOYMENT
+-----------------------------------------------------------------------------
+The deployment configuration has been simplified. You do not need to pass any custom secrets or environment variables. 
 
-The frontend is exposed via a LoadBalancer service.
+Run this single command to deploy the full stack:
 
-Get the external IP:
-  kubectl get svc subman-client -n {{ .Release.Namespace }}
+helm install subman oci://registry-1.docker.io/idanyossi/subman --version 0.1.0 --namespace subman --create-namespace
 
-Open in Minikube:
-  minikube service subman-client -n {{ .Release.Namespace }}
+-----------------------------------------------------------------------------
+2. ACCESSING THE APPLICATION
+-----------------------------------------------------------------------------
+Wait for the pods to reach the 'Running' state (check with: kubectl get pods -n subman).
 
-Port-forward (Docker Desktop / kind):
-  kubectl port-forward svc/subman-client 8080:80 -n {{ .Release.Namespace }}
-  Then open: http://localhost:8080
+Step 1: Get the External IP
+   kubectl get svc -n subman
 
-========================================================================
-   USAGE
-========================================================================
+Step 2: Open in Browser
+   Navigate to http://<EXTERNAL-IP> (or http://localhost if using Docker Desktop)
 
-No credentials needed. Click Login or Sign Up with any email/password
-and you will land on the dashboard immediately.
+-----------------------------------------------------------------------------
+3. USAGE GUIDE (AUTH BYPASSED)
+-----------------------------------------------------------------------------
+To make evaluation easier, the authentication system has been completely bypassed for this submission.
 
-========================================================================
-   CHECKING POD STATUS
-========================================================================
+You do not need to sign up, verify an email, or log in. Just navigate to the dashboard to test the core functionality
+-----------------------------------------------------------------------------
+4. CLEANUP
+-----------------------------------------------------------------------------
+To remove the application and all data:
 
-  kubectl get pods -n {{ .Release.Namespace }}
-
-Wait for all three pods to show 1/1 Running:
-  - postgres-0
-  - subman-api-xxx
-  - subman-client-xxx
-
-The API pod runs two init containers before starting:
-  1. wait-for-postgres  -- waits until the database is ready
-  2. db-migration       -- runs prisma migrate deploy
-
-========================================================================
-   CONFIGURATION & DEFAULT VALUES
-========================================================================
-
-Default DB password : {{ .Values.postgres.dbPassword }}
-Default DB user     : {{ .Values.postgres.dbUser }}
-Default DB name     : {{ .Values.postgres.dbName }}
-
-Override the DB password:
-  helm upgrade --install subman oci://registry-1.docker.io/jsheffer747/subman --version 0.1.0 --set postgres.dbPassword=MyNewPassword
-
-Override multiple values:
-  helm upgrade --install subman oci://registry-1.docker.io/jsheffer747/subman --version 0.1.0 --set postgres.dbPassword=MyNewPassword --set postgres.dbUser=myuser --set postgres.dbName=mydb
-
-Use a custom values file:
-  helm upgrade --install subman oci://registry-1.docker.io/jsheffer747/subman --version 0.1.0 -f my-values.yaml
-
-========================================================================
-   UNINSTALL
-========================================================================
-
-Remove the deployment:
-  helm uninstall subman -n {{ .Release.Namespace }}
-
-Remove the deployment AND all database data:
-  helm uninstall subman -n {{ .Release.Namespace }} && kubectl delete pvc -l app=postgres -n {{ .Release.Namespace }}
-
-NOTE: Reinstalling without deleting the PVC will reuse existing data.
+helm uninstall subman -n subman
+kubectl delete ns subman
