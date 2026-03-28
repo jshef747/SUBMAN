@@ -1,0 +1,83 @@
+.confirm-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+.confirm-modal-content {
+  background-color: var(--card-dark, #1e1e1e);
+  padding: 28px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  border: 1px solid #333;
+  text-align: center;
+  animation: slideDownFade 0.2s ease-out;
+}
+
+@keyframes slideDownFade {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.confirm-modal-title {
+  color: #ff6b6b;
+  margin: 0 0 12px 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.confirm-modal-message {
+  color: #e2e8f0;
+  margin-bottom: 28px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.confirm-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.confirm-cancel-button {
+  background-color: #3a3a3a;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.confirm-cancel-button:hover {
+  background-color: #555;
+}
+
+.confirm-delete-button {
+  background-color: #ff4d4d;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.confirm-delete-button:hover {
+  background-color: #bb1f1f;
+  box-shadow: 0 0 8px rgba(255, 77, 77, 0.4);
+}

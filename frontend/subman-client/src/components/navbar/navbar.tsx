@@ -1,45 +1,25 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../../supabaseClient";
-import type { User } from "@supabase/supabase-js";
+import { useAuth } from "../../context/AuthContext";
 import "./navbar.css";
 
 export default function Navbar() {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     navigate("/");
   };
 
   const handleDashboardClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (user) {
-      navigate("/dashboard");
-    } else {
-      navigate("/login");
-    }
+    navigate(user ? "/dashboard" : "/login");
   };
 
   return (
     <div className="navbar-wrapper">
       <nav className="navbar">
-        <h1>SUBMAN</h1>
+        <span className="navbar-logo">SUBMAN</span>
         <ul className="nav-links">
           <li>
             <a href="/">Home</a>
@@ -52,9 +32,7 @@ export default function Navbar() {
           {user ? (
             <>
               <li>
-                <span className="user-email">
-                  {user.email?.split("@")[0]}
-                </span>
+                <span className="user-email">{user.email}</span>
               </li>
               <li>
                 <button className="logout-btn" onClick={handleLogout}>

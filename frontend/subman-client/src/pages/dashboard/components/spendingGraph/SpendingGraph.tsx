@@ -57,12 +57,19 @@ const SpendingGraph: React.FC<SpendingGraphProps> = ({ subscriptions }) => {
         return { chartData: data, totalYearly: yearlyTotal };
     }, [subscriptions]);
 
+    const formattedTotal = totalYearly.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+
     return (
         <div className="spending-graph-card">
             <div className="spending-header">
                 <h3>Total Projected Yearly Spending</h3>
-                <p className="total-amount">${totalYearly.toFixed(2)}</p>
+                <p className="total-amount">{formattedTotal}</p>
             </div>
+            {totalYearly === 0 ? (
+                <div className="graph-empty-state">
+                    <p>Add active subscriptions to see your spending breakdown.</p>
+                </div>
+            ) : (
             <div className="graph-container">
                 <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={chartData}>
@@ -82,6 +89,7 @@ const SpendingGraph: React.FC<SpendingGraphProps> = ({ subscriptions }) => {
                     </BarChart>
                 </ResponsiveContainer>
             </div>
+            )}
         </div>
     );
 };

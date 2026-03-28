@@ -15,7 +15,7 @@ interface ModalProps {
 
 const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave, editSubscription }) => {
   const [service, setService] = useState<string>(editSubscription ? editSubscription.service : '');
-  const [price, setPrice] = useState<string>(editSubscription ? editSubscription.price.replace('$', '') : '');
+  const [price, setPrice] = useState<string>(editSubscription ? editSubscription.price.replace(/[^0-9.]/g, '') : '');
   const [payCycle, setPayCycle] = useState<string>(editSubscription ? editSubscription.payCycle : '');
 
   const [renewalDate, setRenewalDate] = useState<Date | null>(editSubscription ? (() => {
@@ -111,7 +111,7 @@ const AddSubscriptionModal: React.FC<ModalProps> = ({ isOpen, onClose, onSave, e
   return (
     <div className='modal-overlay' onClick={onClose}>
         <div className='modal-content' onClick={(e) => e.stopPropagation()}>
-            <h2 className='modal-title'>Add Subscription</h2>
+            <h2 className='modal-title'>{editSubscription ? 'Edit Subscription' : 'Add Subscription'}</h2>
             <form>
                 <div className='form-group'>
                     <label className='form-label'>Service Name</label>

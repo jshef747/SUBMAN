@@ -8,7 +8,7 @@ export default function MainBody() {
   return (
     <div className="main-body-wrapper">
       <div className="main-text-wrapper">
-        <h1>Simplify your Subscriptions</h1>
+        <h1>Simplify your <span className="hero-highlight">Subscriptions</span></h1>
         <p>
           Track and manage all your subscriptions in one place. Never forget a
           payment again

@@ -1,22 +1,45 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import HomePage from "./pages/homepage/homepage";
 import DashboardPage from "./pages/dashboard/dashboard";
 import SignupPage from "./pages/signup/signup";
 import LoginPage from "./pages/login/login";
 import Header from "./components/header/header";
 
-function App() {
+function AppRoutes() {
+  const { session, loading } = useAuth();
+
+  if (loading) return null;
+
   return (
-    <BrowserRouter>
+    <>
       <Header />
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={session ? <Navigate to="/dashboard" replace /> : <HomePage />} />
+        <Route path="/login" element={session ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
+        <Route path="/signup" element={session ? <Navigate to="/dashboard" replace /> : <SignupPage />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-    </BrowserRouter>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

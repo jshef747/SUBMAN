@@ -1,18 +1,24 @@
 .feature-card {
   background-color: rgb(20, 20, 20);
+  border: 1px solid #2a2a2a;
   border-radius: 12px;
   padding: 30px;
   width: 300px;
-
   text-align: left;
   color: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .feature-card-icon {
-  font-size: 2rem;
-  color: #50e3c2;
   text-align: center;
   margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
 }
 
 .feature-card-title {

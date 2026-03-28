@@ -1,39 +1,31 @@
 import type React from "react";
 import { useState } from "react";
-import { supabase } from "../../supabaseClient";
 import "./AuthForm.css";
 
 interface AuthFormProps {
   type: "login" | "signup";
-  onSubmit: (email: string, pass: string) => void;
+  onSubmit: (email: string, pass: string) => Promise<void>;
   error?: string;
 }
 
 export default function AuthForm({ type, onSubmit, error }: AuthFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const isSignup = type === "signup";
   const isPasswordTooShort =
     isSignup && password.length > 0 && password.length < 8;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isPasswordTooShort) {
-      alert("Password must be at least 8 characters long.");
-      return;
+    if (isPasswordTooShort) return;
+    setIsLoading(true);
+    try {
+      await onSubmit(email, password);
+    } finally {
+      setIsLoading(false);
     }
-    onSubmit(email, password);
-  };
-
-  const handleGoogleAuth = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/dashboard`,
-      },
-    });
-    if (error) console.error("Login failed:", error.message);
   };
 
   return (
@@ -69,15 +61,10 @@ export default function AuthForm({ type, onSubmit, error }: AuthFormProps) {
           )}
         </div>
 
-        <button type="submit" className="auth-button">
-          {isSignup ? "Sign Up" : "Log In"}
-        </button>
-        <button type="button" className="google-btn" onClick={handleGoogleAuth}>
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
-            alt="Google logo"
-          />
-          {isSignup ? "Sign up with Google" : "Sign in with Google"}
+        {error && <div className="form-error-message">{error}</div>}
+
+        <button type="submit" className="auth-button" disabled={isLoading || isPasswordTooShort}>
+          {isLoading ? "Please wait..." : isSignup ? "Sign Up" : "Log In"}
         </button>
         <p className="auth-footer">
           {type === "signup" ? (
@@ -90,7 +77,6 @@ export default function AuthForm({ type, onSubmit, error }: AuthFormProps) {
             </>
           )}
         </p>
-        {error && <div className="form-error-message">{error}</div>}
       </form>
     </div>
   );

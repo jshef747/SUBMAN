@@ -47,25 +47,26 @@
 
 .form-group {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.7rem;
+    flex-direction: column;
+    margin-bottom: 1.4rem;
+    gap: 0.4rem;
 }
 
 .form-label {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    text-align: center;
+    text-align: left;
+    color: #a0a0a0;
 }
 
 .form-input {
-    width: 50%;
-    padding: 0.4rem;
-    border-radius: 4px;
+    width: 100%;
+    padding: 0.55rem 0.7rem;
+    border-radius: 6px;
     border: 1px solid #555;
     background-color: #2a2a2a;
     color: var(--text-white);
-    text-align: center;
+    text-align: left;
 
     box-sizing: border-box;
     line-height: normal;
@@ -125,8 +126,8 @@ select.form-input {
 
 
 .date-disclaimer {
-    font-size: 0.6rem;
-    color: var(--text-light);
+    font-size: 0.75rem;
+    color: #888;
     margin-top: 2rem;
     margin-bottom: 0.3rem;
 }
@@ -143,7 +144,7 @@ select.form-input {
 }
 
 .date-picker-container {
-    width: 50%;
+    width: 100%;
 }
 
 .date-picker-wrapper {

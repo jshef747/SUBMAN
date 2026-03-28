@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import './subscriptionList.css';
 import AddSubscriptionModal from '../addSubscriptionModal/addSubscriptionModal';
 import ErrorModal from '../errorModal/ErrorModal';
+import ConfirmModal from '../confirmModal/ConfirmModal';
 import { MdDelete } from "react-icons/md";
 import { IoPencil } from "react-icons/io5";
-import { supabase } from '../../../../supabaseClient';
 
 import type { Subscription } from '../../../../types';
 import { getServiceIcon } from '../../../../utils/serviceIcons';
+import { apiFetch } from '../../../../utils/apiClient';
 
 interface SubscriptionListProps {
     subscriptions: Subscription[];
@@ -19,112 +20,79 @@ interface SubscriptionListProps {
 const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setSubscriptions, onRefresh, isLoading }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-    // const [subscriptions, setSubscriptions] = useState<Subscription[]>([]); <-- REMOVED
-
     const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null);
-
     const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
 
+    const handleSaveSubscription = async (data: Subscription) => {
+        const isEdit = !!data.id && data.id > 0;
+        const method = isEdit ? 'PATCH' : 'POST';
+        const path = isEdit ? `/subscriptions/${data.id}` : '/subscriptions';
 
-
-    // fetchSubscriptions REMOVED (moved to parent)
-
-    // useEffect REMOVED (moved to parent)
-
-
-    const handleAddSubscription = async (data: Subscription) => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-
-        // Optimistic UI Update
-        const apiUrl = import.meta.env.VITE_API_URL;
         const tempId = -Date.now();
-        const optimisticSubscription = { ...data, id: tempId };
-        setSubscriptions(prev => [...prev, optimisticSubscription]);
+        if (!isEdit) {
+            setSubscriptions(prev => [...prev, { ...data, id: tempId }]);
+        }
         setIsModalOpen(false);
         setEditingSubscription(null);
 
         const [day, month, year] = data.renewalDate.split('/');
         const isoDate = new Date(`${year}-${month}-${day}`).toISOString();
-
-        const numericPrice = parseFloat(data.price.replace('$', ''));
+        const numericPrice = parseFloat(data.price.replace(/[^0-9.]/g, ''));
 
         const payload = {
             name: data.service,
             pricePerCycle: numericPrice,
             payCycle: data.payCycle,
             renewalDate: isoDate,
-            isActive: true
+            isActive: true,
         };
 
         try {
-            const response = await fetch(`${apiUrl}/subscriptions`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session.access_token}`
-                },
-                body: JSON.stringify(payload)
+            const response = await apiFetch(path, {
+                method,
+                body: JSON.stringify(payload),
             });
 
             if (response.ok) {
                 onRefresh();
             } else {
-                // Revert optimistic update
-                setSubscriptions(prev => prev.filter(sub => sub.id !== tempId));
-                setErrorMessage("Failed to save subscription");
+                if (!isEdit) setSubscriptions(prev => prev.filter(sub => sub.id !== tempId));
+                setErrorMessage('Failed to save subscription');
                 setIsErrorModalOpen(true);
             }
-        } catch (error) {
-            console.error("Error saving:", error);
-            // Revert optimistic update
-            setSubscriptions(prev => prev.filter(sub => sub.id !== tempId));
-            setErrorMessage("An error occurred while saving the subscription");
+        } catch {
+            if (!isEdit) setSubscriptions(prev => prev.filter(sub => sub.id !== tempId));
+            setErrorMessage('An error occurred while saving the subscription');
             setIsErrorModalOpen(true);
         }
-    }
+    };
 
     const handleEditSubscription = (subscription: Subscription) => {
         setEditingSubscription(subscription);
         setIsModalOpen(true);
-    }
+    };
 
     const handleDeleteSubscription = async (id: number) => {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) return;
-        const apiUrl = import.meta.env.VITE_API_URL;
-
-
-        // Optimistic UI Update
         const previousSubscriptions = [...subscriptions];
         setSubscriptions(prev => prev.filter(sub => sub.id !== id));
 
         try {
-            const response = await fetch(`${apiUrl}/subscriptions/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${session.access_token}`
-                }
-            });
+            const response = await apiFetch(`/subscriptions/${id}`, { method: 'DELETE' });
             if (response.ok) {
                 onRefresh();
-            }
-            else {
-                // Revert optimistic update
+            } else {
                 setSubscriptions(previousSubscriptions);
-                setErrorMessage("Failed to delete subscription");
+                setErrorMessage('Failed to delete subscription');
                 setIsErrorModalOpen(true);
             }
-        } catch (error) {
-            console.error("Error deleting subscription:", error);
-            // Revert optimistic update
+        } catch {
             setSubscriptions(previousSubscriptions);
-            setErrorMessage("An error occurred while deleting the subscription");
+            setErrorMessage('An error occurred while deleting the subscription');
             setIsErrorModalOpen(true);
         }
-    }
+    };
 
     const calculateNextPaymentDate = (payCycle: string, renewalDate: string): string => {
         const today = new Date();
@@ -143,16 +111,15 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
         const d = String(nextDate.getDate()).padStart(2, '0');
         const m = String(nextDate.getMonth() + 1).padStart(2, '0');
         const y = nextDate.getFullYear();
-
         return `${d}/${m}/${y}`;
+    };
 
-    }
+    const confirmDeleteSub = subscriptions.find(s => s.id === confirmDeleteId);
 
     return (
         <div className='sub-list-card'>
-
             <div className='card-header'>
-                <h3 className='card-title'>Dashboard</h3>
+                <h3 className='card-title'>My Subscriptions</h3>
                 <button className='add-subscription-button' onClick={() => setIsModalOpen(true)}>Add Subscription</button>
             </div>
 
@@ -163,8 +130,8 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
                         <th>Service</th>
                         <th>Price</th>
                         <th>Pay Cycle</th>
-                        <th>Next Payment Date</th>
-                        <th className='status-head'>Status</th>
+                        <th>Next Payment</th>
+                        <th>Status</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -181,6 +148,13 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
                                 <td><div className='skeleton skeleton-icon'></div></td>
                             </tr>
                         ))
+                    ) : subscriptions.length === 0 ? (
+                        <tr>
+                            <td colSpan={7} className='empty-state'>
+                                <p>No subscriptions yet.</p>
+                                <p className='empty-state-sub'>Click "Add Subscription" to track your first one.</p>
+                            </td>
+                        </tr>
                     ) : (
                         subscriptions.map((sub) => (
                             <tr key={sub.id} className='table-row'>
@@ -193,14 +167,14 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
                                 </td>
                                 <td>{sub.price}</td>
                                 <td>{sub.payCycle}</td>
-                                <td className='next-cell'>{calculateNextPaymentDate(sub.payCycle, sub.renewalDate)}</td>
+                                <td>{calculateNextPaymentDate(sub.payCycle, sub.renewalDate)}</td>
                                 <td>
                                     <span className={`status-badge ${sub.status.toLowerCase()}`}>
                                         {sub.status}
                                     </span>
                                 </td>
                                 <td>
-                                    <button className='delete-button' onClick={() => handleDeleteSubscription(sub.id!)}><MdDelete size={24} /></button>
+                                    <button className='delete-button' onClick={() => setConfirmDeleteId(sub.id!)}><MdDelete size={24} /></button>
                                 </td>
                             </tr>
                         ))
@@ -210,10 +184,18 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
 
             <AddSubscriptionModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSave={handleAddSubscription}
+                onClose={() => { setIsModalOpen(false); setEditingSubscription(null); }}
+                onSave={handleSaveSubscription}
                 editSubscription={editingSubscription}
                 key={editingSubscription ? editingSubscription.id : 'add'}
+            />
+
+            <ConfirmModal
+                isOpen={confirmDeleteId !== null}
+                onClose={() => setConfirmDeleteId(null)}
+                onConfirm={() => { if (confirmDeleteId !== null) handleDeleteSubscription(confirmDeleteId); }}
+                title="Delete Subscription"
+                message={confirmDeleteSub ? `Delete "${confirmDeleteSub.service}"? This cannot be undone.` : 'Delete this subscription?'}
             />
 
             <ErrorModal
@@ -222,7 +204,7 @@ const SubscriptionList: React.FC<SubscriptionListProps> = ({ subscriptions, setS
                 message={errorMessage}
             />
         </div>
-    )
-}
+    );
+};
 
 export default SubscriptionList;
